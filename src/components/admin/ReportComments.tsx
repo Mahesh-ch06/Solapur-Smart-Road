@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useReportStore, Report } from '@/store/reportStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +26,7 @@ interface Comment {
 // Simulated comment storage (in production, use Supabase)
 const commentsStore: Record<string, Comment[]> = {};
 
-const ReportComments = ({ report }: { report: Report }) => {
+const ReportComments = ({ reportId }: { reportId: string }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isInternal, setIsInternal] = useState(false);
@@ -35,9 +34,9 @@ const ReportComments = ({ report }: { report: Report }) => {
 
   // Load comments for this report
   useEffect(() => {
-    const reportComments = commentsStore[report.id] || [];
+    const reportComments = commentsStore[reportId] || [];
     setComments(reportComments);
-  }, [report.id]);
+  }, [reportId]);
 
   const addComment = async () => {
     if (!newComment.trim()) {
@@ -49,19 +48,19 @@ const ReportComments = ({ report }: { report: Report }) => {
     try {
       const comment: Comment = {
         id: Date.now().toString(),
-        reportId: report.id,
+        reportId,
         adminEmail: 'maheshch1094@gmail.com', // Get from auth store in production
         message: newComment,
         timestamp: new Date().toISOString(),
         isInternal
       };
 
-      if (!commentsStore[report.id]) {
-        commentsStore[report.id] = [];
+      if (!commentsStore[reportId]) {
+        commentsStore[reportId] = [];
       }
-      commentsStore[report.id].push(comment);
+      commentsStore[reportId].push(comment);
       
-      setComments([...commentsStore[report.id]]);
+      setComments([...commentsStore[reportId]]);
       setNewComment('');
       setIsInternal(false);
       
@@ -74,9 +73,9 @@ const ReportComments = ({ report }: { report: Report }) => {
   };
 
   const deleteComment = (commentId: string) => {
-    if (commentsStore[report.id]) {
-      commentsStore[report.id] = commentsStore[report.id].filter(c => c.id !== commentId);
-      setComments([...commentsStore[report.id]]);
+    if (commentsStore[reportId]) {
+      commentsStore[reportId] = commentsStore[reportId].filter(c => c.id !== commentId);
+      setComments([...commentsStore[reportId]]);
       toast.success('Comment deleted');
     }
   };
