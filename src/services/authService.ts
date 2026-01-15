@@ -19,10 +19,8 @@ export async function signIn(email: string, password: string) {
 
     if (error) throw error;
 
-    console.log('✅ Signed in successfully:', data.user?.email);
     return { user: data.user, error: null };
   } catch (error) {
-    console.error('❌ Sign in error:', error);
     return { user: null, error };
   }
 }
@@ -41,10 +39,8 @@ export async function signInWithMagicLink(email: string) {
 
     if (error) throw error;
 
-    console.log('✅ Magic link sent to:', email);
     return { success: true, error: null };
   } catch (error) {
-    console.error('❌ Magic link error:', error);
     return { success: false, error };
   }
 }
@@ -66,10 +62,8 @@ export async function signUp(email: string, password: string) {
 
     if (error) throw error;
 
-    console.log('✅ Signed up successfully:', data.user?.email);
     return { user: data.user, error: null };
   } catch (error) {
-    console.error('❌ Sign up error:', error);
     return { user: null, error };
   }
 }
@@ -82,10 +76,8 @@ export async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
 
-    console.log('✅ Signed out successfully');
     return { error: null };
   } catch (error) {
-    console.error('❌ Sign out error:', error);
     return { error };
   }
 }
@@ -100,7 +92,6 @@ export async function getCurrentUser(): Promise<User | null> {
     if (error) throw error;
     return user;
   } catch (error) {
-    console.error('❌ Get user error:', error);
     return null;
   }
 }
@@ -124,10 +115,8 @@ export async function resetPassword(email: string) {
 
     if (error) throw error;
 
-    console.log('✅ Password reset email sent to:', email);
     return { error: null };
   } catch (error) {
-    console.error('❌ Password reset error:', error);
     return { error };
   }
 }
@@ -143,10 +132,8 @@ export async function updatePassword(newPassword: string) {
 
     if (error) throw error;
 
-    console.log('✅ Password updated successfully');
     return { error: null };
   } catch (error) {
-    console.error('❌ Update password error:', error);
     return { error };
   }
 }
@@ -156,7 +143,6 @@ export async function updatePassword(newPassword: string) {
  */
 export function onAuthStateChange(callback: (user: User | null) => void) {
   return supabase.auth.onAuthStateChange((event, session) => {
-    console.log('🔐 Auth state changed:', event);
     callback(session?.user ?? null);
   });
 }

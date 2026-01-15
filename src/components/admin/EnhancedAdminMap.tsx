@@ -66,8 +66,9 @@ const LocationMarker = ({ onLocationFound }: { onLocationFound: (lat: number, ln
     map.locate({ setView: false, maxZoom: 16 });
     
     map.on('locationfound', (e) => {
-      setPosition([e.latitude, e.longitude]);
-      onLocationFound(e.latitude, e.longitude);
+      setPosition([e.latlng.lat, e.latlng.lng]);
+      
+      onLocationFound(e.latlng.lat, e.latlng.lng);
     });
 
     return () => {
@@ -123,7 +124,7 @@ const EnhancedAdminMap = () => {
           setCenter(userPos);
         },
         (error) => {
-          console.error('Error getting location:', error);
+          // Geolocation error - user denied or unavailable
         }
       );
     }

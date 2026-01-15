@@ -13,7 +13,6 @@ export interface Coordinates {
 export const getCurrentLocation = (): Promise<Coordinates> => {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
-      console.log('Geolocation not supported, using Solapur defaults');
       resolve(SOLAPUR_COORDS);
       return;
     }
@@ -26,7 +25,6 @@ export const getCurrentLocation = (): Promise<Coordinates> => {
         });
       },
       (error) => {
-        console.log('Geolocation error, using Solapur defaults:', error.message);
         resolve(SOLAPUR_COORDS);
       },
       {
@@ -117,7 +115,6 @@ export const reverseGeocode = async (lat: number, lng: number): Promise<string> 
 
     return parts.length > 0 ? parts.join(', ') : data.display_name || formatCoords(lat, lng);
   } catch (error) {
-    console.error('Reverse geocoding error:', error);
     // Fallback to coordinates if geocoding fails
     return formatCoords(lat, lng);
   }

@@ -75,9 +75,7 @@ export const useReportStore = create<ReportStore>((set, get) => ({
 
       const formattedReports = data ? data.map(formatReport) : [];
       set({ reports: formattedReports, initialized: true, loading: false });
-      console.log('✅ Loaded', formattedReports.length, 'reports from Supabase');
     } catch (error) {
-      console.error('❌ Error loading reports from Supabase:', error);
       set({ loading: false, initialized: true });
     }
   },
@@ -110,8 +108,6 @@ export const useReportStore = create<ReportStore>((set, get) => ({
       const newReport = formatReport(data);
       set((state) => ({ reports: [newReport, ...state.reports] }));
 
-      console.log('✅ Report saved to Supabase:', ticketId);
-
       // Send confirmation notification to the user
       if (reportData.userEmail || reportData.userPhone) {
         await sendReportConfirmation(
@@ -120,12 +116,10 @@ export const useReportStore = create<ReportStore>((set, get) => ({
           reportData.userEmail,
           reportData.userPhone
         );
-        console.log('📧 Confirmation notification sent');
       }
 
       return ticketId;
     } catch (error) {
-      console.error('❌ Error adding report to Supabase:', error);
       throw error;
     }
   },
@@ -135,7 +129,6 @@ export const useReportStore = create<ReportStore>((set, get) => ({
     const report = get().reports.find((r) => r.id === id);
     if (!report) {
       const error = new Error(`Report not found: ${id}`);
-      console.error('❌', error.message);
       throw error;
     }
 
@@ -165,8 +158,6 @@ export const useReportStore = create<ReportStore>((set, get) => ({
         ),
       }));
 
-      console.log('✅ Status updated in Supabase:', report.ticketId, '→', status);
-
       // Send notification if status changed
       if (oldStatus !== status) {
         await sendStatusChangeNotification(
@@ -178,7 +169,6 @@ export const useReportStore = create<ReportStore>((set, get) => ({
         );
       }
     } catch (error) {
-      console.error('❌ Error updating report status in Supabase:', error);
       throw error; // Re-throw so calling code can handle it
     }
   },
@@ -193,10 +183,7 @@ export const useReportStore = create<ReportStore>((set, get) => ({
       set((state) => ({
         reports: state.reports.filter((r) => r.id !== id),
       }));
-
-      console.log('✅ Report deleted from Supabase:', id);
     } catch (error) {
-      console.error('❌ Error deleting report from Supabase:', error);
       throw error;
     }
   },

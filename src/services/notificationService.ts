@@ -44,7 +44,6 @@ export async function createNotification(data: NotificationData) {
     if (error) throw error;
     return { success: true, data: notification };
   } catch (error) {
-    console.error('Error creating notification:', error);
     return { success: false, error };
   }
 }
@@ -60,7 +59,6 @@ export async function sendStatusChangeNotification(
   phone?: string
 ) {
   if (!email && !phone) {
-    console.warn('No email or phone provided for notification');
     return { success: false, error: 'No contact information provided' };
   }
 
@@ -94,7 +92,6 @@ export async function sendStatusChangeNotification(
 
     return result;
   } catch (error) {
-    console.error('Error sending status change notification:', error);
     return { success: false, error };
   }
 }
@@ -109,7 +106,6 @@ export async function sendReportConfirmation(
   phone?: string
 ) {
   if (!email && !phone) {
-    console.warn('No email or phone provided for confirmation');
     return { success: false, error: 'No contact information provided' };
   }
 
@@ -134,7 +130,6 @@ export async function sendReportConfirmation(
 
     return result;
   } catch (error) {
-    console.error('Error sending report confirmation:', error);
     return { success: false, error };
   }
 }
@@ -170,10 +165,6 @@ function getStatusChangeMessage(
  */
 async function sendEmailNotification(notification: any, ticketId?: string, status?: string) {
   if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-    console.warn('⚠️ EmailJS not configured. Add credentials to .env file.');
-    console.log('📧 Email would be sent to:', notification.recipient_email);
-    console.log('📄 Message:', notification.message);
-    
     // Mark as sent even without config (for development)
     await supabase
       .from('notifications')
@@ -203,8 +194,6 @@ async function sendEmailNotification(notification: any, ticketId?: string, statu
       templateParams
     );
 
-    console.log('✅ Email sent successfully to:', notification.recipient_email);
-
     // Mark notification as sent
     await supabase
       .from('notifications')
@@ -216,8 +205,6 @@ async function sendEmailNotification(notification: any, ticketId?: string, statu
 
     return { success: true, mode: 'production' };
   } catch (error) {
-    console.error('❌ Error sending email:', error);
-
     // Mark notification as failed
     await supabase
       .from('notifications')
@@ -237,9 +224,6 @@ async function sendNotification(notification: any, ticketId?: string, status?: s
   }
   
   if (notification.recipient_phone) {
-    console.log('📱 SMS notifications require Twilio setup');
-    console.log('📄 SMS would be sent to:', notification.recipient_phone);
-    
     // Mark as sent for now (SMS not implemented)
     await supabase
       .from('notifications')
@@ -269,7 +253,6 @@ export async function getNotificationsByReportId(reportId: string) {
     if (error) throw error;
     return { success: true, data };
   } catch (error) {
-    console.error('Error fetching notifications:', error);
     return { success: false, error, data: [] };
   }
 }
@@ -288,7 +271,6 @@ export async function getPendingNotifications() {
     if (error) throw error;
     return { success: true, data };
   } catch (error) {
-    console.error('Error fetching pending notifications:', error);
     return { success: false, error, data: [] };
   }
 }

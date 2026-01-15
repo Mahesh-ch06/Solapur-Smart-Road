@@ -135,7 +135,6 @@ const AdminWorkOrders = () => {
       toast.success('Report rejected and email sent to user');
       setSelectedReport(null);
     } catch (error) {
-      console.error('Rejection error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to reject report';
       toast.error(errorMessage);
     } finally {

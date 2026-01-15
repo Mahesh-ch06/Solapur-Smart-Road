@@ -135,7 +135,7 @@ const ReportComments = ({ report }: { report: Report }) => {
                     <User className="w-4 h-4" />
                     <span className="font-semibold text-sm">{comment.adminEmail}</span>
                     {comment.isInternal && (
-                      <Badge variant="warning" className="text-xs">
+                      <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100">
                         <Shield className="w-3 h-3 mr-1" />
                         Internal
                       </Badge>
