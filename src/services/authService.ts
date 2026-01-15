@@ -1,0 +1,162 @@
+import { supabase } from '../lib/supabase';
+import { User } from '@supabase/supabase-js';
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  role?: string;
+}
+
+/**
+ * Sign in with email and password
+ */
+export async function signIn(email: string, password: string) {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+
+    console.log('✅ Signed in successfully:', data.user?.email);
+    return { user: data.user, error: null };
+  } catch (error) {
+    console.error('❌ Sign in error:', error);
+    return { user: null, error };
+  }
+}
+
+/**
+ * Sign in with magic link (passwordless)
+ */
+export async function signInWithMagicLink(email: string) {
+  try {
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/admin/orders`,
+      },
+    });
+
+    if (error) throw error;
+
+    console.log('✅ Magic link sent to:', email);
+    return { success: true, error: null };
+  } catch (error) {
+    console.error('❌ Magic link error:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Sign up new admin user
+ */
+export async function signUp(email: string, password: string) {
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role: 'admin',
+        },
+      },
+    });
+
+    if (error) throw error;
+
+    console.log('✅ Signed up successfully:', data.user?.email);
+    return { user: data.user, error: null };
+  } catch (error) {
+    console.error('❌ Sign up error:', error);
+    return { user: null, error };
+  }
+}
+
+/**
+ * Sign out current user
+ */
+export async function signOut() {
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+
+    console.log('✅ Signed out successfully');
+    return { error: null };
+  } catch (error) {
+    console.error('❌ Sign out error:', error);
+    return { error };
+  }
+}
+
+/**
+ * Get current authenticated user
+ */
+export async function getCurrentUser(): Promise<User | null> {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error) throw error;
+    return user;
+  } catch (error) {
+    console.error('❌ Get user error:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if user is authenticated
+ */
+export async function isAuthenticated(): Promise<boolean> {
+  const user = await getCurrentUser();
+  return user !== null;
+}
+
+/**
+ * Reset password
+ */
+export async function resetPassword(email: string) {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/admin/reset-password`,
+    });
+
+    if (error) throw error;
+
+    console.log('✅ Password reset email sent to:', email);
+    return { error: null };
+  } catch (error) {
+    console.error('❌ Password reset error:', error);
+    return { error };
+  }
+}
+
+/**
+ * Update password
+ */
+export async function updatePassword(newPassword: string) {
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) throw error;
+
+    console.log('✅ Password updated successfully');
+    return { error: null };
+  } catch (error) {
+    console.error('❌ Update password error:', error);
+    return { error };
+  }
+}
+
+/**
+ * Listen to auth state changes
+ */
+export function onAuthStateChange(callback: (user: User | null) => void) {
+  return supabase.auth.onAuthStateChange((event, session) => {
+    console.log('🔐 Auth state changed:', event);
+    callback(session?.user ?? null);
+  });
+}

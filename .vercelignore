@@ -1,0 +1,9 @@
+node_modules
+.env.local
+.env.development
+*.md
+!README.md
+.git
+.vscode
+coverage
+*.log
