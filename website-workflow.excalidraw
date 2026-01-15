@@ -1,12 +1,12 @@
 {
   "type": "excalidraw",
   "version": 2,
-  "source": "https://excalidraw.com",
+  "source": "https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor",
   "elements": [
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 540814416,
       "isDeleted": false,
       "id": "user-section",
       "fillStyle": "solid",
@@ -24,16 +24,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "a0"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 841449648,
       "isDeleted": false,
       "id": "user-title",
       "fillStyle": "solid",
@@ -53,7 +56,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 28,
@@ -64,12 +67,14 @@
       "containerId": null,
       "originalText": "USER FLOW",
       "lineHeight": 1.25,
-      "baseline": 25
+      "baseline": 25,
+      "index": "a1",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 110240336,
       "isDeleted": false,
       "id": "step1",
       "fillStyle": "solid",
@@ -87,16 +92,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "a2"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 2094262960,
       "isDeleted": false,
       "id": "step1-text",
       "fillStyle": "solid",
@@ -116,7 +124,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -127,12 +135,14 @@
       "containerId": null,
       "originalText": "1. Visit Homepage\n   View live stats",
       "lineHeight": 1.25,
-      "baseline": 32
+      "baseline": 32,
+      "index": "a3",
+      "autoResize": true
     },
     {
       "type": "arrow",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1522096208,
       "isDeleted": false,
       "id": "arrow1",
       "fillStyle": "solid",
@@ -150,9 +160,11 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 2 },
+      "roundness": {
+        "type": 2
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -160,12 +172,22 @@
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
-      "points": [[0, 0], [0, 40]]
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          40
+        ]
+      ],
+      "index": "a4"
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1248007344,
       "isDeleted": false,
       "id": "step2",
       "fillStyle": "solid",
@@ -183,16 +205,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "a5"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1351208528,
       "isDeleted": false,
       "id": "step2-text",
       "fillStyle": "solid",
@@ -212,7 +237,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -223,12 +248,14 @@
       "containerId": null,
       "originalText": "2. Report Road Issue\n   - Select location on map\n   - Add photo & description\n   - Set severity level",
       "lineHeight": 1.25,
-      "baseline": 52
+      "baseline": 52,
+      "index": "a6",
+      "autoResize": true
     },
     {
       "type": "arrow",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 813498032,
       "isDeleted": false,
       "id": "arrow2",
       "fillStyle": "solid",
@@ -246,9 +273,11 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 2 },
+      "roundness": {
+        "type": 2
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -256,12 +285,22 @@
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
-      "points": [[0, 0], [0, 40]]
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          40
+        ]
+      ],
+      "index": "a7"
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1624998992,
       "isDeleted": false,
       "id": "step3",
       "fillStyle": "solid",
@@ -279,16 +318,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "a8"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1338615984,
       "isDeleted": false,
       "id": "step3-text",
       "fillStyle": "solid",
@@ -308,7 +350,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -319,12 +361,14 @@
       "containerId": null,
       "originalText": "3. Submit Report\n   ✅ Saved to Supabase\n   ✅ Get unique Ticket ID\n   ✅ Receive email\n      confirmation",
       "lineHeight": 1.25,
-      "baseline": 72
+      "baseline": 72,
+      "index": "a9",
+      "autoResize": true
     },
     {
       "type": "arrow",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 696678992,
       "isDeleted": false,
       "id": "arrow3",
       "fillStyle": "solid",
@@ -342,9 +386,11 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 2 },
+      "roundness": {
+        "type": 2
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -352,12 +398,22 @@
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
-      "points": [[0, 0], [0, 40]]
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          40
+        ]
+      ],
+      "index": "aA"
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1945178800,
       "isDeleted": false,
       "id": "step4",
       "fillStyle": "solid",
@@ -375,16 +431,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aB"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1298313296,
       "isDeleted": false,
       "id": "step4-text",
       "fillStyle": "solid",
@@ -404,7 +463,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -415,12 +474,14 @@
       "containerId": null,
       "originalText": "4. Track Status\n   Use Ticket ID to check\n   report progress",
       "lineHeight": 1.25,
-      "baseline": 42
+      "baseline": 42,
+      "index": "aC",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 865811632,
       "isDeleted": false,
       "id": "admin-section",
       "fillStyle": "solid",
@@ -438,16 +499,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aD"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1414014544,
       "isDeleted": false,
       "id": "admin-title",
       "fillStyle": "solid",
@@ -467,7 +531,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 28,
@@ -478,12 +542,14 @@
       "containerId": null,
       "originalText": "ADMIN FLOW",
       "lineHeight": 1.25,
-      "baseline": 25
+      "baseline": 25,
+      "index": "aE",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 275785392,
       "isDeleted": false,
       "id": "admin1",
       "fillStyle": "solid",
@@ -501,16 +567,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aF"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 185523280,
       "isDeleted": false,
       "id": "admin1-text",
       "fillStyle": "solid",
@@ -530,7 +599,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -541,12 +610,14 @@
       "containerId": null,
       "originalText": "1. Login (Supabase Auth)\n   maheshch1094@gmail.com",
       "lineHeight": 1.25,
-      "baseline": 22
+      "baseline": 22,
+      "index": "aG",
+      "autoResize": true
     },
     {
       "type": "arrow",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 387436720,
       "isDeleted": false,
       "id": "arrow-admin1",
       "fillStyle": "solid",
@@ -564,9 +635,11 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 2 },
+      "roundness": {
+        "type": 2
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -574,12 +647,22 @@
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
-      "points": [[0, 0], [0, 30]]
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          30
+        ]
+      ],
+      "index": "aH"
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 38,
+      "versionNonce": 1518404176,
       "isDeleted": false,
       "id": "admin2",
       "fillStyle": "solid",
@@ -592,21 +675,24 @@
       "y": 360,
       "strokeColor": "#f57c00",
       "backgroundColor": "#ffe0b2",
-      "width": 310,
-      "height": 80,
+      "width": 314.7115196197261,
+      "height": 88.74999801987795,
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768448121419,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aI"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 3,
+      "versionNonce": 1421239376,
       "isDeleted": false,
       "id": "admin2-text",
       "fillStyle": "solid",
@@ -619,14 +705,14 @@
       "y": 370,
       "strokeColor": "#e65100",
       "backgroundColor": "transparent",
-      "width": 280,
-      "height": 60,
+      "width": 197.47264099121094,
+      "height": 80,
       "seed": 1,
       "groupIds": [],
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768448123998,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -637,12 +723,14 @@
       "containerId": null,
       "originalText": "2. View Dashboard\n   📊 8 Analytics Cards\n   📈 Charts & Trends\n   📅 Date Filters",
       "lineHeight": 1.25,
-      "baseline": 52
+      "baseline": 52,
+      "index": "aJ",
+      "autoResize": true
     },
     {
       "type": "arrow",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1419774032,
       "isDeleted": false,
       "id": "arrow-admin2",
       "fillStyle": "solid",
@@ -660,9 +748,11 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 2 },
+      "roundness": {
+        "type": 2
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -670,12 +760,22 @@
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
-      "points": [[0, 0], [0, 30]]
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          30
+        ]
+      ],
+      "index": "aK"
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1266640048,
       "isDeleted": false,
       "id": "admin3",
       "fillStyle": "solid",
@@ -693,16 +793,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aL"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 3,
+      "versionNonce": 91855952,
       "isDeleted": false,
       "id": "admin3-text",
       "fillStyle": "solid",
@@ -715,14 +818,14 @@
       "y": 488,
       "strokeColor": "#e65100",
       "backgroundColor": "transparent",
-      "width": 280,
-      "height": 80,
+      "width": 204.81666564941406,
+      "height": 100,
       "seed": 1,
       "groupIds": [],
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768448093494,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -733,12 +836,14 @@
       "containerId": null,
       "originalText": "3. Manage Work Orders\n   ✅ Update status\n   ✅ Bulk operations\n   ✅ Reject reports\n   ✅ Send custom emails",
       "lineHeight": 1.25,
-      "baseline": 72
+      "baseline": 72,
+      "index": "aM",
+      "autoResize": true
     },
     {
       "type": "arrow",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1770999472,
       "isDeleted": false,
       "id": "arrow-admin3",
       "fillStyle": "solid",
@@ -756,9 +861,11 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 2 },
+      "roundness": {
+        "type": 2
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -766,12 +873,22 @@
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
-      "points": [[0, 0], [0, 30]]
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          30
+        ]
+      ],
+      "index": "aN"
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 886453328,
       "isDeleted": false,
       "id": "admin4",
       "fillStyle": "solid",
@@ -789,16 +906,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aO"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1376909488,
       "isDeleted": false,
       "id": "admin4-text",
       "fillStyle": "solid",
@@ -818,7 +938,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 16,
@@ -829,12 +949,14 @@
       "containerId": null,
       "originalText": "4. View Map & Export CSV",
       "lineHeight": 1.25,
-      "baseline": 12
+      "baseline": 12,
+      "index": "aP",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 178989648,
       "isDeleted": false,
       "id": "tech-section",
       "fillStyle": "solid",
@@ -852,16 +974,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aQ"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 682582704,
       "isDeleted": false,
       "id": "tech-title",
       "fillStyle": "solid",
@@ -881,7 +1006,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 28,
@@ -892,12 +1017,14 @@
       "containerId": null,
       "originalText": "TECHNICAL ARCHITECTURE",
       "lineHeight": 1.25,
-      "baseline": 25
+      "baseline": 25,
+      "index": "aR",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 108093520,
       "isDeleted": false,
       "id": "frontend",
       "fillStyle": "solid",
@@ -915,16 +1042,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aS"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1544522928,
       "isDeleted": false,
       "id": "frontend-text",
       "fillStyle": "solid",
@@ -944,7 +1074,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 14,
@@ -955,12 +1085,14 @@
       "containerId": null,
       "originalText": "FRONTEND\n━━━━━━━━━━\n⚛️ React + TypeScript\n🎨 Tailwind CSS\n🗺️ Leaflet Maps\n🎯 Zustand Store\n🌙 Dark Mode\n📱 Responsive\n🔐 Protected Routes",
       "lineHeight": 1.25,
-      "baseline": 162
+      "baseline": 162,
+      "index": "aT",
+      "autoResize": true
     },
     {
       "type": "arrow",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1476449872,
       "isDeleted": false,
       "id": "arrow-tech1",
       "fillStyle": "solid",
@@ -978,9 +1110,11 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 2 },
+      "roundness": {
+        "type": 2
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -988,12 +1122,22 @@
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
-      "points": [[0, 0], [50, 0]]
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          50,
+          0
+        ]
+      ],
+      "index": "aU"
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1171945136,
       "isDeleted": false,
       "id": "backend",
       "fillStyle": "solid",
@@ -1011,16 +1155,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aV"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1949404240,
       "isDeleted": false,
       "id": "backend-text",
       "fillStyle": "solid",
@@ -1040,7 +1187,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 14,
@@ -1051,12 +1198,14 @@
       "containerId": null,
       "originalText": "BACKEND\n━━━━━━━━━━\n🗄️ Supabase\n📊 PostgreSQL DB\n🔐 Row Level Security\n👤 Auth System\n📡 Real-time Sync\n🔑 API Keys\n💾 File Storage",
       "lineHeight": 1.25,
-      "baseline": 162
+      "baseline": 162,
+      "index": "aW",
+      "autoResize": true
     },
     {
       "type": "arrow",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1253580976,
       "isDeleted": false,
       "id": "arrow-tech2",
       "fillStyle": "solid",
@@ -1074,9 +1223,11 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 2 },
+      "roundness": {
+        "type": 2
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -1084,12 +1235,22 @@
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
-      "points": [[0, 0], [50, 0]]
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          50,
+          0
+        ]
+      ],
+      "index": "aX"
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 1960542800,
       "isDeleted": false,
       "id": "services",
       "fillStyle": "solid",
@@ -1107,16 +1268,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aY"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 2052098736,
       "isDeleted": false,
       "id": "services-text",
       "fillStyle": "solid",
@@ -1136,7 +1300,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 14,
@@ -1147,12 +1311,14 @@
       "containerId": null,
       "originalText": "SERVICES\n━━━━━━━━━━\n📧 EmailJS\n  - Confirmations\n  - Status updates\n  - Rejections\n🗺️ OpenStreetMap\n🌍 Nominatim API\n📍 Geocoding",
       "lineHeight": 1.25,
-      "baseline": 162
+      "baseline": 162,
+      "index": "aZ",
+      "autoResize": true
     },
     {
       "type": "rectangle",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 2027337808,
       "isDeleted": false,
       "id": "features-box",
       "fillStyle": "solid",
@@ -1170,16 +1336,19 @@
       "seed": 1,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
-      "locked": false
+      "locked": false,
+      "index": "aa"
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 2,
+      "versionNonce": 793490608,
       "isDeleted": false,
       "id": "features-title",
       "fillStyle": "solid",
@@ -1199,7 +1368,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447923914,
       "link": null,
       "locked": false,
       "fontSize": 28,
@@ -1210,12 +1379,14 @@
       "containerId": null,
       "originalText": "KEY FEATURES",
       "lineHeight": 1.25,
-      "baseline": 25
+      "baseline": 25,
+      "index": "ab",
+      "autoResize": true
     },
     {
       "type": "text",
-      "version": 1,
-      "versionNonce": 1,
+      "version": 15,
+      "versionNonce": 551960240,
       "isDeleted": false,
       "id": "features-list",
       "fillStyle": "solid",
@@ -1235,7 +1406,7 @@
       "frameId": null,
       "roundness": null,
       "boundElements": [],
-      "updated": 1,
+      "updated": 1768447943266,
       "link": null,
       "locked": false,
       "fontSize": 14,
@@ -1246,11 +1417,15 @@
       "containerId": null,
       "originalText": "USER FEATURES:\n━━━━━━━━━━━━━━━━━\n✅ Report road issues with photos\n✅ Interactive map selection\n✅ Auto-detect current location\n✅ Reverse geocoding for address\n✅ 3 severity levels (Low/Med/High)\n✅ Get unique Ticket ID (SRP-XXX)\n✅ Track report status\n✅ Email notifications\n✅ Dark/Light mode toggle\n✅ Mobile responsive design\n\nADMIN FEATURES:\n━━━━━━━━━━━━━━━━━\n🔐 Secure login (Supabase Auth)\n📊 Analytics Dashboard:\n   • Total reports\n   • Fixed today\n   • Open/In-Progress counts\n   • Average resolution time\n   • Severity breakdown\n   • Status distribution\n   • Success rate\n   • Performance trends\n📈 Interactive Charts\n📅 Date range filters\n📥 CSV Export\n🗺️ Map view with markers\n📋 Work Orders Management:\n   • Search & filter\n   • Status updates\n   • Bulk operations\n   • Reject with email\n   • Custom email sender\n   • View details modal\n🔄 Real-time data sync\n🌙 Dark mode support\n🔑 Password reset feature\n\nDATA STRUCTURE:\n━━━━━━━━━━━━━━━━━\nReport Fields:\n• ID (UUID)\n• Ticket ID (SRP-XXX)\n• Location (lat/lng)\n• Address\n• Description\n• Photo URL\n• Severity (low/medium/high)\n• Status (open/in-progress/\n  resolved/rejected)\n• Created At\n• Resolved At\n• User Email\n• User Phone",
       "lineHeight": 1.25,
-      "baseline": 832
+      "baseline": 832,
+      "index": "ac",
+      "autoResize": true
     }
   ],
   "appState": {
-    "gridSize": null,
+    "gridSize": 20,
+    "gridStep": 5,
+    "gridModeEnabled": false,
     "viewBackgroundColor": "#ffffff"
   },
   "files": {}
