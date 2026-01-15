@@ -60,6 +60,44 @@ const ReportForm = () => {
     }
   };
 
+  // Get nearby reports within 100m radius
+  const getNearbyReports = () => {
+    if (!location) return [];
+    
+    return reports
+      .filter(report => {
+        const distance = getDistance(
+          location.lat,
+          location.lng,
+          report.latitude,
+          report.longitude
+        );
+        return distance <= 100; // 100 meters
+      })
+      .map(report => ({
+        latitude: report.latitude,
+        longitude: report.longitude,
+        ticketId: report.ticketId,
+        status: report.status
+      }));
+  };
+
+  // Calculate distance between two points (Haversine formula)
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371e3; // Earth's radius in meters
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+  };
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -248,7 +286,11 @@ const ReportForm = () => {
                 Drag the pin to mark the exact pothole location
               </p>
               
-              <DraggableMap onPositionChange={handleLocationChange} />
+              <DraggableMap 
+                onPositionChange={handleLocationChange}
+                nearbyReports={getNearbyReports()}
+                showAccuracyCircle={true}
+              />
               
               {location && (
                 <div className="mt-4 p-4 bg-secondary rounded-xl space-y-2">
@@ -266,6 +308,14 @@ const ReportForm = () => {
                   <p className="text-xs text-muted-foreground">
                     {formatCoords(location.lat, location.lng)}
                   </p>
+                  {getNearbyReports().length > 0 && (
+                    <div className="flex items-center gap-2 mt-3 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <p className="text-xs text-amber-800 dark:text-amber-200">
+                        {getNearbyReports().length} existing {getNearbyReports().length === 1 ? 'report' : 'reports'} found nearby
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
