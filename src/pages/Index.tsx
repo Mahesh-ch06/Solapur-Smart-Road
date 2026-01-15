@@ -4,6 +4,7 @@ import HowItWorks from '@/components/landing/HowItWorks';
 import Tutorial from '@/components/landing/Tutorial';
 import Footer from '@/components/landing/Footer';
 import ThemeToggle from '@/components/ThemeToggle';
+import { AIChatbot } from '@/components/landing/AIChatbot';
 
 const Index = () => {
   return (
@@ -18,6 +19,9 @@ const Index = () => {
       <Tutorial />
       <HowItWorks />
       <Footer />
+      
+      {/* AI Chatbot */}
+      <AIChatbot />
     </div>
   );
 };

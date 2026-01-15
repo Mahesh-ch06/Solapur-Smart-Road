@@ -173,7 +173,12 @@ const AdminWorkOrders = () => {
         'SEND_CUSTOM_EMAIL',
         `Sent custom email with subject: "${customEmailSubject}"`,
         selectedReport.id,
-        selectedReport.ticketId
+        selectedReport.ticketId,
+        {
+          to: selectedReport.userEmail,
+          subject: customEmailSubject,
+          message: customEmailMessage,
+        }
       );
       
       toast.success('Custom email sent successfully');

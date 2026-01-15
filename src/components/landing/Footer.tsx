@@ -25,6 +25,9 @@ const Footer = () => {
             <Link to="/track" className="hover:text-sidebar-primary transition-colors">
               Track Status
             </Link>
+            <Link to="/contact" className="hover:text-sidebar-primary transition-colors">
+              Contact Us
+            </Link>
             <Link to="/admin" className="hover:text-sidebar-primary transition-colors">
               Admin
             </Link>

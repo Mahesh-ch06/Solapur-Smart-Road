@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Shield, 
   Search, 
@@ -13,13 +13,22 @@ import {
   Activity,
   Download,
   Trash2,
-  Filter
+  Filter,
+  Eye,
+  X,
+  Mail
 } from 'lucide-react';
 
 const AdminAuditLogs = () => {
-  const { logs, clearOldLogs } = useAuditStore();
+  const { logs, clearOldLogs, loadLogs, loading } = useAuditStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterAction, setFilterAction] = useState('all');
+  const [viewingEmail, setViewingEmail] = useState<AuditLog | null>(null);
+
+  // Load logs from database on mount
+  useEffect(() => {
+    loadLogs();
+  }, [loadLogs]);
 
   // Filter logs
   const filteredLogs = logs.filter(log => {
@@ -205,12 +214,13 @@ const AdminAuditLogs = () => {
                     <th className="text-left p-3 text-sm font-semibold">Ticket ID</th>
                     <th className="text-left p-3 text-sm font-semibold">Details</th>
                     <th className="text-left p-3 text-sm font-semibold">IP Address</th>
+                    <th className="text-left p-3 text-sm font-semibold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredLogs.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-8 text-gray-500">
+                      <td colSpan={7} className="text-center py-8 text-gray-500">
                         No logs found
                       </td>
                     </tr>
@@ -246,6 +256,19 @@ const AdminAuditLogs = () => {
                         <td className="p-3 text-sm font-mono text-gray-500">
                           {log.ipAddress || '-'}
                         </td>
+                        <td className="p-3">
+                          {log.emailMetadata && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setViewingEmail(log)}
+                              className="flex items-center gap-1"
+                            >
+                              <Eye className="w-3 h-3" />
+                              View Email
+                            </Button>
+                          )}
+                        </td>
                       </tr>
                     ))
                   )}
@@ -254,6 +277,59 @@ const AdminAuditLogs = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Email View Modal */}
+        {viewingEmail && viewingEmail.emailMetadata && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setViewingEmail(null)}>
+            <div className="bg-background rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="sticky top-0 bg-background border-b border-border p-6 flex justify-between items-center">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <Mail className="w-5 h-5" />
+                  Email Details
+                </h2>
+                <button onClick={() => setViewingEmail(null)} className="text-muted-foreground hover:text-foreground">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Sent At</p>
+                    <p className="font-medium">{new Date(viewingEmail.timestamp).toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Ticket ID</p>
+                    <p className="font-medium font-mono">{viewingEmail.ticketId || '-'}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground">To</p>
+                  <p className="font-medium">{viewingEmail.emailMetadata.to}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground">Subject</p>
+                  <p className="font-semibold text-lg">{viewingEmail.emailMetadata.subject}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">Message</p>
+                  <div className="bg-secondary/30 p-4 rounded-lg border border-border">
+                    <p className="whitespace-pre-wrap">{viewingEmail.emailMetadata.message}</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button onClick={() => setViewingEmail(null)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
