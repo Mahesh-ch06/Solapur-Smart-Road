@@ -12,7 +12,7 @@ create table if not exists public.reports (
   description text not null,
   severity text check (severity in ('low', 'medium', 'high')) not null,
   photo text,
-  status text check (status in ('open', 'in-progress', 'resolved')) default 'open' not null,
+  status text check (status in ('open', 'in-progress', 'resolved', 'rejected')) default 'open' not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   resolved_at timestamp with time zone,
   address text,
