@@ -12,6 +12,7 @@ import Track from "./pages/Track";
 import Admin from "./pages/Admin";
 import AdminMap from "./pages/AdminMap";
 import AdminOrders from "./pages/AdminOrders";
+import AdminAuditLogs from "./pages/AdminAuditLogs";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           <Route path="/admin/map" element={<ProtectedRoute><AdminMap /></ProtectedRoute>} />
           <Route path="/admin/orders" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
+          <Route path="/admin/audit-logs" element={<ProtectedRoute><AdminAuditLogs /></ProtectedRoute>} />
           <Route path="/admin/reset-password" element={<ProtectedRoute><ResetPassword /></ProtectedRoute>} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

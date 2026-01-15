@@ -11,7 +11,8 @@ import {
   MapPin,
   LogOut,
   User,
-  KeyRound
+  KeyRound,
+  Shield
 } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -19,6 +20,7 @@ const navItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/admin/map', icon: Map, label: 'Live Map' },
   { path: '/admin/orders', icon: ClipboardList, label: 'Work Orders' },
+  { path: '/admin/audit-logs', icon: Shield, label: 'Audit Logs' },
 ];
 
 interface AdminLayoutProps {

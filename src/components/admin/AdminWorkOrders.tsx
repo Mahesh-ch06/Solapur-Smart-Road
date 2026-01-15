@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useReportStore, Report, ReportStatus } from '@/store/reportStore';
+import { logAction } from '@/store/auditStore';
+import ReportComments from './ReportComments';
 import { toast } from 'sonner';
 import emailjs from '@emailjs/browser';
 import { 
@@ -67,7 +69,18 @@ const AdminWorkOrders = () => {
     });
 
   const handleStatusChange = async (id: string, newStatus: ReportStatus) => {
+    const report = reports.find(r => r.id === id);
     await updateStatus(id, newStatus);
+    
+    // Log the action
+    if (report) {
+      logAction(
+        'UPDATE_STATUS',
+        `Changed status from ${report.status} to ${newStatus}`,
+        report.id,
+        report.ticketId
+      );
+    }
     
     // Custom messages based on status
     const messages = {
@@ -96,6 +109,14 @@ const AdminWorkOrders = () => {
 
       // Update status in database first
       await updateStatus(report.id, 'rejected');
+      
+      // Log the rejection
+      logAction(
+        'REJECT_REPORT',
+        `Rejected report with reason: Does not meet criteria`,
+        report.id,
+        report.ticketId
+      );
       
       // Send rejection email
       await emailjs.send(
@@ -148,6 +169,14 @@ const AdminWorkOrders = () => {
         }
       );
       
+      // Log the custom email
+      logAction(
+        'SEND_CUSTOM_EMAIL',
+        `Sent custom email with subject: "${customEmailSubject}"`,
+        selectedReport.id,
+        selectedReport.ticketId
+      );
+      
       toast.success('Custom email sent successfully');
       setShowCustomEmail(false);
       setCustomEmailSubject('');
@@ -188,9 +217,21 @@ const AdminWorkOrders = () => {
     if (!confirmed) return;
 
     try {
+      const reportIds = Array.from(selectedReports);
+      const selectedReportObjs = reports.filter(r => reportIds.includes(r.id));
+      
       await Promise.all(
-        Array.from(selectedReports).map(id => updateStatus(id, newStatus))
+        reportIds.map(id => updateStatus(id, newStatus))
       );
+      
+      // Log bulk operation
+      logAction(
+        'BULK_STATUS_UPDATE',
+        `Updated ${reportIds.length} reports to status: ${newStatus}`,
+        undefined,
+        selectedReportObjs.map(r => r.ticketId).join(', ')
+      );
+      
       toast.success(`${selectedReports.size} report(s) updated to ${newStatus.replace('-', ' ')}`);
       setSelectedReports(new Set());
       setShowBulkActions(false);
@@ -535,6 +576,11 @@ const AdminWorkOrders = () => {
                   />
                 </div>
               )}
+              
+              {/* Comments Section */}
+              <div className="border-t pt-4">
+                <ReportComments reportId={selectedReport.id} />
+              </div>
             </div>
           </div>
         </div>
