@@ -182,8 +182,6 @@ export const useReportStore = create<ReportStore>((set, get) => ({
       throw error; // Re-throw so calling code can handle it
     }
   },
-    }
-  },
 
   // Delete report from Supabase
   deleteReport: async (id) => {
