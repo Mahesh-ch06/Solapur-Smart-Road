@@ -565,11 +565,11 @@ const AdminWorkOrders = () => {
                 <p className="font-medium">{selectedReport.description}</p>
               </div>
 
-              {selectedReport.photoUrl && (
+              {selectedReport.photo && (
                 <div>
                   <p className="text-sm text-muted-foreground mb-2">Photo Evidence</p>
                   <img 
-                    src={selectedReport.photoUrl} 
+                    src={selectedReport.photo} 
                     alt="Report evidence" 
                     className="rounded-lg max-h-96 w-full object-contain border border-border"
                   />
