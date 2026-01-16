@@ -1,4 +1,4 @@
-@import 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap';
 
 @tailwind base;
 @tailwind components;
@@ -108,7 +108,7 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
   }
 }
 
@@ -190,7 +190,7 @@
 
 /* Leaflet map fixes */
 .leaflet-container {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Manrope', system-ui, sans-serif;
   z-index: 0;
 }
 
@@ -209,4 +209,148 @@
 
 .leaflet-control-zoom a {
   @apply bg-card text-foreground border-border hover:bg-secondary;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  html {
+    font-size: 16px; /* Prevent font boosting on mobile */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Larger tap targets for mobile */
+  button, a, input[type="button"], input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better spacing for mobile readability */
+  .container {
+    @apply px-4;
+  }
+
+  /* Optimized font sizes for mobile */
+  h1 {
+    @apply text-3xl sm:text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl sm:text-2xl;
+  }
+
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Better modal/dialog sizing on mobile */
+  [role="dialog"], [role="alertdialog"] {
+    @apply max-w-[95vw];
+  }
+
+  /* Stack columns on mobile */
+  .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  }
+
+  /* Improve form inputs on mobile */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevent zoom on iOS */
+    @apply min-h-[44px];
+  }
+
+  /* Better touch feedback */
+  button:active, a:active {
+    @apply scale-95;
+  }
+
+  /* Sticky headers better positioning */
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+
+  /* Improve map controls on mobile */
+  .leaflet-control-zoom {
+    @apply scale-110;
+  }
+
+  .leaflet-control-zoom a {
+    @apply w-11 h-11 leading-10 text-xl;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .container {
+    @apply px-6;
+  }
+
+  /* Better grid layouts for tablet */
+  .grid-responsive {
+    @apply grid-cols-2 lg:grid-cols-3;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover states on touch devices */
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+
+  /* Better touch targets */
+  button, a {
+    @apply p-3;
+  }
+
+  /* Prevent text selection during touch */
+  body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Allow text selection in inputs */
+  input, textarea {
+    -webkit-touch-callout: default;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Reduce vertical padding in landscape */
+  .py-16 {
+    @apply py-8;
+  }
+
+  .py-12 {
+    @apply py-6;
+  }
+
+  /* Stack hero section differently */
+  .hero-content {
+    @apply gap-4;
+  }
+}
+
+/* High-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Ensure crisp images on retina */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+  }
 }

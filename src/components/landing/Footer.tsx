@@ -34,7 +34,7 @@ const Footer = () => {
           </div>
           
           <div className="text-sm text-sidebar-foreground/70 text-center md:text-right">
-            <p>© 2024 Solapur Municipal Corporation</p>
+            <p>© 2026 Solapur Municipal Corporation</p>
             <p>All rights reserved</p>
           </div>
         </div>

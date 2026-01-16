@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { 
@@ -10,18 +10,27 @@ import {
   ArrowLeft, 
   ArrowRight,
   AlertTriangle,
-  Upload
+  Upload,
+  Mail,
+  Shield
 } from 'lucide-react';
 import DraggableMap from '@/components/map/DraggableMap';
 import { useReportStore, Severity } from '@/store/reportStore';
 import { isNearExistingReport, formatCoords, reverseGeocode } from '@/utils/geolocation';
+import { validateDescription } from '@/utils/profanityFilter';
 import ThemeToggle from '@/components/ThemeToggle';
+import emailjs from '@emailjs/browser';
+
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+const EMAILJS_OTP_TEMPLATE_ID = 'template_otp_verify'; // Create this template in EmailJS
 
 const steps = [
-  { id: 1, label: 'Location', icon: MapPin },
-  { id: 2, label: 'Details', icon: FileText },
-  { id: 3, label: 'Photo', icon: Camera },
-  { id: 4, label: 'Submit', icon: Send },
+  { id: 1, label: 'Verify Email', icon: Mail },
+  { id: 2, label: 'Location', icon: MapPin },
+  { id: 3, label: 'Details', icon: FileText },
+  { id: 4, label: 'Photo', icon: Camera },
+  { id: 5, label: 'Review', icon: Send },
 ];
 
 const ReportForm = () => {
@@ -33,6 +42,22 @@ const ReportForm = () => {
   const [submittedTicketId, setSubmittedTicketId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Email verification
+  const [userEmail, setUserEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  
+  // Initialize EmailJS
+  useEffect(() => {
+    if (EMAILJS_PUBLIC_KEY) {
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+  }, []);
+  
   // Form data
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [address, setAddress] = useState<string>('');
@@ -41,7 +66,6 @@ const ReportForm = () => {
   const [severity, setSeverity] = useState<Severity>('medium');
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [userEmail, setUserEmail] = useState('');
   const [userPhone, setUserPhone] = useState('');
 
   const handleLocationChange = async (lat: number, lng: number) => {
@@ -112,24 +136,130 @@ const ReportForm = () => {
     }
   };
 
+  // OTP Functions
+  const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const handleSendOTP = async () => {
+    if (!userEmail.trim()) {
+      toast.error('Please enter your email address');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    // Validate EmailJS configuration
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_PUBLIC_KEY) {
+      toast.error('Email service is not configured. Please contact support.');
+      console.error('EmailJS configuration missing');
+      return;
+    }
+
+    setSendingOtp(true);
+    const newOtp = generateOTP();
+    setGeneratedOtp(newOtp);
+
+    try {
+      // Send OTP via EmailJS
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_OTP_TEMPLATE_ID,
+        {
+          to_email: userEmail,
+          to_name: userEmail.split('@')[0],
+          otp_code: newOtp,
+          app_name: 'Solapur Road Rescuer',
+        }
+      );
+      
+      toast.success(`OTP sent to ${userEmail}`, {
+        description: 'Please check your email for the verification code',
+        duration: 5000,
+      });
+      
+      setOtpSent(true);
+      setSendingOtp(false);
+    } catch (error) {
+      console.error('Failed to send OTP:', error);
+      toast.error('Failed to send OTP. Please try again.');
+      setGeneratedOtp('');
+      setSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOTP = () => {
+    if (!otp.trim()) {
+      toast.error('Please enter the OTP');
+      return;
+    }
+
+    setVerifyingOtp(true);
+
+    // Simulate verification delay
+    setTimeout(() => {
+      if (otp === generatedOtp) {
+        setIsEmailVerified(true);
+        toast.success('Email verified successfully!', {
+          description: 'You can now proceed with your report',
+        });
+        setVerifyingOtp(false);
+        // Auto-advance to next step after 1 second
+        setTimeout(() => {
+          setCurrentStep(2);
+        }, 1000);
+      } else {
+        toast.error('Invalid OTP', {
+          description: 'Please check the code and try again',
+        });
+        setVerifyingOtp(false);
+      }
+    }, 1000);
+  };
+
   const handleNext = () => {
-    if (currentStep === 1 && !location) {
+    // Step 1: Email Verification
+    if (currentStep === 1) {
+      if (!isEmailVerified) {
+        toast.error('Please verify your email to continue');
+        return;
+      }
+    }
+    
+    // Step 2: Location
+    if (currentStep === 2 && !location) {
       toast.error('Please set your location');
       return;
     }
-    if (currentStep === 2 && !description.trim()) {
-      toast.error('Please provide a description');
-      return;
+    
+    // Step 3: Details (Description)
+    if (currentStep === 3) {
+      if (!description.trim()) {
+        toast.error('Please provide a description');
+        return;
+      }
+      // Validate description (checks profanity and special characters)
+      const validation = validateDescription(description, 'Description');
+      if (!validation.isValid) {
+        toast.error(validation.error, {
+          description: 'Only letters, numbers, and basic punctuation (. , ! ? - \' ") are allowed.',
+          duration: 5000,
+        });
+        return;
+      }
     }
-    if (currentStep === 3 && !photo) {
+    
+    // Step 4: Photo
+    if (currentStep === 4 && !photo) {
       toast.error('Please upload a photo of the issue');
       return;
     }
-    if (currentStep === 4 && !userEmail.trim()) {
-      toast.error('Email is required to receive status updates');
-      return;
-    }
-    setCurrentStep((prev) => Math.min(prev + 1, 4));
+    
+    setCurrentStep((prev) => Math.min(prev + 1, 5));
   };
 
   const handleBack = () => {
@@ -232,10 +362,10 @@ const ReportForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/40 pb-36 pt-2 sm:pt-4">
       {/* Header */}
-      <div className="bg-card border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+      <div className="bg-card/95 backdrop-blur border-b border-border sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <button
@@ -245,8 +375,8 @@ const ReportForm = () => {
                 <ArrowLeft className="w-5 h-5" />
               </button>
               <div>
-                <h1 className="font-semibold text-foreground">Report Pothole</h1>
-                <p className="text-sm text-muted-foreground">Step {currentStep} of 4</p>
+                <h1 className="font-semibold text-foreground">Report a Pothole</h1>
+                <p className="text-sm text-muted-foreground">Step {currentStep} of 5</p>
               </div>
             </div>
             <ThemeToggle />
@@ -255,9 +385,9 @@ const ReportForm = () => {
       </div>
 
       {/* Step Indicators */}
-      <div className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between max-w-md mx-auto">
+      <div className="bg-card/90 backdrop-blur border-b border-border">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between max-w-lg mx-auto gap-2 overflow-x-auto">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
                 <div
@@ -290,21 +420,182 @@ const ReportForm = () => {
 
       {/* Form Content */}
       <div className="container mx-auto px-4 py-6">
-        <div className="max-w-md mx-auto">
-          {/* Step 1: Location */}
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Report guide</p>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">Finish in 5 quick steps</h2>
+                <p className="text-xs text-muted-foreground">We keep you updated via verified email and Ticket ID.</p>
+              </div>
+              <div className="text-xs text-muted-foreground text-right hidden sm:block">
+                <p>GPS required for accurate location</p>
+                <p>Photo is mandatory</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                <MapPin className="w-4 h-4 text-primary" />
+                <span>Pin exact spot</span>
+              </div>
+              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                <Camera className="w-4 h-4 text-primary" />
+                <span>Photo required</span>
+              </div>
+              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                <Shield className="w-4 h-4 text-primary" />
+                <span>OTP-verified email</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px] sm:text-xs text-muted-foreground">
+              {steps.map((step) => (
+                <div key={step.id} className={`rounded-xl px-3 py-2 border ${currentStep === step.id ? 'border-primary bg-primary/10 text-foreground' : 'border-border bg-secondary/50'}`}>
+                  <div className="flex items-center gap-2">
+                    <step.icon className="w-4 h-4 text-primary" />
+                    <span className="font-semibold">{step.label}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Step 1: Email Verification */}
           {currentStep === 1 && (
-            <div className="animate-fade-in">
+            <div className="animate-fade-in bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">Verify Your Email</h2>
+                  <p className="text-muted-foreground text-sm">We send updates and the OTP here. Use the same email for tracking later.</p>
+                </div>
+                <div className="text-[11px] text-muted-foreground bg-secondary/70 border border-border rounded-lg px-3 py-2">
+                  <p className="font-semibold text-foreground">Why required?</p>
+                  <p>Prevents duplicate/false reports and lets us notify you.</p>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-foreground">
+                    Email Address <span className="text-destructive">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={userEmail}
+                    onChange={(e) => setUserEmail(e.target.value)}
+                    disabled={isEmailVerified}
+                    placeholder="your.email@example.com"
+                    className="input-field h-11"
+                  />
+                  <p className="text-xs text-muted-foreground">Tip: Check spam/promotions if you do not see the code in 30 seconds.</p>
+                </div>
+
+                {!otpSent && !isEmailVerified && (
+                  <button
+                    onClick={handleSendOTP}
+                    disabled={sendingOtp}
+                    className="btn-hero-primary w-full justify-center h-11"
+                  >
+                    {sendingOtp ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Sending OTP...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="w-5 h-5" />
+                        Send OTP
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {otpSent && !isEmailVerified && (
+                  <div className="grid gap-3">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-foreground">
+                        Enter OTP <span className="text-destructive">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        placeholder="6-digit code"
+                        className="input-field text-center text-lg tracking-wider h-12"
+                        maxLength={6}
+                      />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <button
+                        onClick={handleVerifyOTP}
+                        disabled={verifyingOtp || otp.length !== 6}
+                        className="btn-hero-primary flex-1 justify-center h-11"
+                      >
+                        {verifyingOtp ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Verifying...
+                          </>
+                        ) : (
+                          <>
+                            <Shield className="w-5 h-5" />
+                            Verify OTP
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={handleSendOTP}
+                        disabled={sendingOtp}
+                        className="flex-1 h-11 border border-border rounded-xl text-sm font-medium text-primary hover:bg-secondary"
+                      >
+                        Resend OTP
+                      </button>
+                    </div>
+
+                    <div className="text-xs text-muted-foreground bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                      <p>Use the same email on the Track page to see all your reports.</p>
+                    </div>
+                  </div>
+                )}
+
+                {isEmailVerified && (
+                  <div className="bg-success/10 border border-success/20 rounded-lg p-4 flex items-center gap-3">
+                    <Check className="w-5 h-5 text-success" />
+                    <div>
+                      <p className="text-sm font-medium text-success">Email Verified!</p>
+                      <p className="text-xs text-success/70">{userEmail}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Location */}
+          {currentStep === 2 && (
+            <div className="animate-fade-in bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-foreground mb-2">
-                Set Location
+                GPS Location
               </h2>
               <p className="text-muted-foreground mb-6">
-                Drag the pin to mark the exact pothole location
+                Using your current GPS location to report the issue
               </p>
+              <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span>Drag the pin to the exact spot</span>
+                </div>
+                <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Keep GPS on for better accuracy</span>
+                </div>
+              </div>
               
               <DraggableMap 
                 onPositionChange={handleLocationChange}
                 nearbyReports={getNearbyReports()}
                 showAccuracyCircle={true}
+                gpsOnly={true}
               />
               
               {location && (
@@ -323,6 +614,7 @@ const ReportForm = () => {
                   <p className="text-xs text-muted-foreground">
                     {formatCoords(location.lat, location.lng)}
                   </p>
+                  <p className="text-xs text-muted-foreground">If the address looks off, drag slightly until it matches the street.</p>
                   {getNearbyReports().length > 0 && (
                     <div className="flex items-center gap-2 mt-3 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
                       <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
@@ -336,9 +628,9 @@ const ReportForm = () => {
             </div>
           )}
 
-          {/* Step 2: Details */}
-          {currentStep === 2 && (
-            <div className="animate-fade-in">
+          {/* Step 3: Details */}
+          {currentStep === 3 && (
+            <div className="animate-fade-in bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-foreground mb-2">
                 Describe the Issue
               </h2>
@@ -358,6 +650,10 @@ const ReportForm = () => {
                     rows={4}
                     className="input-field resize-none"
                   />
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+                    <span>Be specific: size, lane, nearby landmark.</span>
+                    <span>{description.length}/300</span>
+                  </div>
                 </div>
                 
                 <div>
@@ -384,20 +680,35 @@ const ReportForm = () => {
                       </button>
                     ))}
                   </div>
+                  <p className="text-xs text-muted-foreground mt-2">High = deep hole or traffic risk • Medium = uneven patch • Low = cosmetic/starting wear.</p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Step 3: Photo */}
-          {currentStep === 3 && (
-            <div className="animate-fade-in">
+          {/* Step 4: Photo */}
+          {currentStep === 4 && (
+            <div className="animate-fade-in bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-foreground mb-2">
                 Add Photo <span className="text-destructive">*</span>
               </h2>
               <p className="text-muted-foreground mb-6">
                 A photo is required to help our team assess the damage
               </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-muted-foreground mb-4">
+                <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                  <Camera className="w-4 h-4 text-primary" />
+                  <span>Good lighting</span>
+                </div>
+                <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span>Show surrounding road</span>
+                </div>
+                <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+                  <AlertTriangle className="w-4 h-4 text-primary" />
+                  <span>Stay safe from traffic</span>
+                </div>
+              </div>
               
               <input
                 type="file"
@@ -413,22 +724,25 @@ const ReportForm = () => {
                   <img
                     src={photoPreview}
                     alt="Pothole preview"
-                    className="w-full h-64 object-cover rounded-xl"
+                    className="w-full h-64 object-cover rounded-xl border border-border/70"
                   />
-                  <button
-                    onClick={() => {
-                      setPhoto(null);
-                      setPhotoPreview(null);
-                    }}
-                    className="absolute top-3 right-3 p-2 bg-card/90 rounded-full shadow-lg"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                  </button>
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between bg-black/60 text-white rounded-xl px-3 py-2 text-xs">
+                    <span>Looks clear? If not, retake.</span>
+                    <button
+                      onClick={() => {
+                        setPhoto(null);
+                        setPhotoPreview(null);
+                      }}
+                      className="underline"
+                    >
+                      Retake
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-64 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-4 hover:border-primary/50 hover:bg-primary/5 transition-all"
+                  className="w-full h-64 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-4 hover:border-primary/50 hover:bg-primary/5 transition-all bg-secondary/50"
                 >
                   <div className="p-4 bg-primary/10 rounded-full">
                     <Camera className="w-8 h-8 text-primary" />
@@ -442,15 +756,20 @@ const ReportForm = () => {
             </div>
           )}
 
-          {/* Step 4: Review & Submit */}
-          {currentStep === 4 && (
-            <div className="animate-fade-in">
+          {/* Step 5: Review & Submit */}
+          {currentStep === 5 && (
+            <div className="animate-fade-in bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-foreground mb-2">
                 Review & Submit
               </h2>
               <p className="text-muted-foreground mb-6">
                 Verify the details before submitting
               </p>
+              <div className="flex flex-wrap gap-2 mb-4 text-xs">
+                <button onClick={() => setCurrentStep(2)} className="px-3 py-2 rounded-lg border border-border hover:border-primary/40">Edit location</button>
+                <button onClick={() => setCurrentStep(3)} className="px-3 py-2 rounded-lg border border-border hover:border-primary/40">Edit details</button>
+                <button onClick={() => setCurrentStep(4)} className="px-3 py-2 rounded-lg border border-border hover:border-primary/40">Edit photo</button>
+              </div>
               
               <div className="space-y-4">
                 <div className="card-elevated">
@@ -513,27 +832,26 @@ const ReportForm = () => {
                 )}
                 
                 {/* Contact Information for Notifications */}
-                <div className="card-elevated bg-primary/5 border-primary/20">
-                  <h3 className="text-sm font-semibold text-foreground mb-3">
-                    Get Status Updates <span className="text-destructive">*</span>
+                <div className="card-elevated bg-success/5 border-success/20">
+                  <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-success" />
+                    Contact Information (Verified)
                   </h3>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Email is required to receive notifications when your report status changes
-                  </p>
                   
                   <div className="space-y-3">
                     <div>
                       <label className="block text-xs font-medium text-foreground mb-1">
-                        Email Address <span className="text-destructive">*</span>
+                        Email Address <span className="text-success">(Verified)</span>
                       </label>
                       <input
                         type="email"
                         value={userEmail}
-                        onChange={(e) => setUserEmail(e.target.value)}
-                        placeholder="your.email@example.com"
-                        className="input-field text-sm"
-                        required
+                        disabled
+                        className="input-field text-sm bg-muted/50 cursor-not-allowed"
                       />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        ✓ You will receive status updates at this email
+                      </p>
                     </div>
                     
                     <div>
@@ -557,7 +875,7 @@ const ReportForm = () => {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 z-50 safe-area-bottom">
+      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur border-t border-border p-4 z-50 safe-area-bottom shadow-lg">
         <div className="container mx-auto">
           <div className="max-w-md mx-auto flex gap-3">
             {currentStep > 1 && (
@@ -569,7 +887,7 @@ const ReportForm = () => {
               </button>
             )}
             
-            {currentStep < 4 ? (
+            {currentStep < 5 ? (
               <button
                 onClick={handleNext}
                 className="flex-1 btn-hero-primary justify-center py-3 touch-manipulation"

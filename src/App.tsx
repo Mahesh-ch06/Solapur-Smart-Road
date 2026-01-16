@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Report from "./pages/Report";
 import Track from "./pages/Track";
 import ContactUs from "./pages/ContactUs";
+import UserDashboard from "./pages/UserDashboard";
 import NotFound from "./pages/NotFound";
 import { APP_VERSION } from "./lib/version";
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/report" element={<Report />} />
           <Route path="/track" element={<Track />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
           
           {/* Admin Login - Public Route */}
           <Route path="/admin/login" element={<Suspense fallback={<PageLoader />}><AdminLogin /></Suspense>} />

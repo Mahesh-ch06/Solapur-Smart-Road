@@ -47,6 +47,7 @@ interface DraggableMapProps {
   nearbyReports?: Array<{ latitude: number; longitude: number; ticketId: string; status: string }>;
   showAccuracyCircle?: boolean;
   readOnly?: boolean;
+  gpsOnly?: boolean; // New prop to lock to GPS location only
 }
 
 // User location marker (blue dot)
@@ -71,17 +72,20 @@ const DraggableMarker = ({
   position,
   onPositionChange,
   readOnly,
+  gpsOnly = false,
 }: {
   position: [number, number];
   onPositionChange: (lat: number, lng: number) => void;
   readOnly?: boolean;
+  gpsOnly?: boolean;
 }) => {
   const [markerPosition, setMarkerPosition] = useState<[number, number]>(position);
   const markerRef = useRef<L.Marker>(null);
 
   useMapEvents({
     click(e) {
-      if (!readOnly) {
+      // Disabled if GPS only mode or read only
+      if (!readOnly && !gpsOnly) {
         setMarkerPosition([e.latlng.lat, e.latlng.lng]);
         onPositionChange(e.latlng.lat, e.latlng.lng);
       }
@@ -96,11 +100,11 @@ const DraggableMarker = ({
     <Marker
       position={markerPosition}
       icon={locationIcon}
-      draggable={!readOnly}
+      draggable={!readOnly && !gpsOnly} // Disable dragging if GPS only mode
       ref={markerRef}
       eventHandlers={{
         dragend() {
-          if (!readOnly) {
+          if (!readOnly && !gpsOnly) {
             const marker = markerRef.current;
             if (marker) {
               const latlng = marker.getLatLng();
@@ -113,11 +117,13 @@ const DraggableMarker = ({
     >
       <Popup>
         <div className="text-center p-2">
-          <p className="font-semibold text-sm mb-1">📍 Report Location</p>
+          <p className="font-semibold text-sm mb-1">📍 Your GPS Location</p>
           <p className="text-xs text-muted-foreground">
             {position[0].toFixed(6)}, {position[1].toFixed(6)}
           </p>
-          {!readOnly && (
+          {gpsOnly ? (
+            <p className="text-xs text-blue-600 mt-2 font-medium">GPS location locked</p>
+          ) : !readOnly && (
             <p className="text-xs text-primary mt-2">Drag to adjust position</p>
           )}
         </div>
@@ -131,7 +137,8 @@ const DraggableMap = ({
   onPositionChange, 
   nearbyReports = [],
   showAccuracyCircle = true,
-  readOnly = false
+  readOnly = false,
+  gpsOnly = false // GPS only mode - disables manual selection
 }: DraggableMapProps) => {
   const [mounted, setMounted] = useState(false);
   const [position, setPosition] = useState<[number, number]>([
@@ -288,12 +295,13 @@ const DraggableMap = ({
         <DraggableMarker
           position={position}
           onPositionChange={(lat, lng) => {
-            if (!readOnly) {
+            if (!readOnly && !gpsOnly) {
               setPosition([lat, lng]);
               onPositionChange(lat, lng);
             }
           }}
           readOnly={readOnly}
+          gpsOnly={gpsOnly}
         />
 
         {/* Accuracy circle for user location */}
@@ -405,13 +413,20 @@ const DraggableMap = ({
           <Info className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-xs font-semibold text-foreground mb-1">
-              {readOnly ? 'Location Locked' : 'Set Report Location'}
+              {readOnly ? 'Location Locked' : gpsOnly ? 'GPS Location Only' : 'Set Report Location'}
             </p>
-            {!readOnly && (
+            {!readOnly && !gpsOnly && (
               <p className="text-xs text-muted-foreground leading-relaxed">
                 • Drag the blue pin<br />
                 • Tap/click on map<br />
                 • Use locate button for GPS
+              </p>
+            )}
+            {gpsOnly && (
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                • Using your current GPS location<br />
+                • Click locate button to refresh<br />
+                • Manual selection disabled
               </p>
             )}
           </div>
