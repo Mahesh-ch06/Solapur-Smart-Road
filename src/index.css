@@ -168,6 +168,24 @@
   .step-pending {
     @apply step-indicator bg-muted text-muted-foreground;
   }
+
+  /* Mobile touch optimization */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Safe area for mobile devices */
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  /* Prevent double-tap zoom on buttons */
+  button {
+    touch-action: manipulation;
+  }
 }
 
 /* Leaflet map fixes */

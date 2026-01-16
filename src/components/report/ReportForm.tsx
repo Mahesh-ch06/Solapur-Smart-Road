@@ -31,6 +31,7 @@ const ReportForm = () => {
   
   const [currentStep, setCurrentStep] = useState(1);
   const [submittedTicketId, setSubmittedTicketId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form data
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -147,24 +148,38 @@ const ReportForm = () => {
       toast.error('Photo is required. Please go back and upload a photo.');
       return;
     }
+
+    // Prevent double submission
+    if (isSubmitting) return;
     
-    const ticketId = await addReport({
-      latitude: location.lat,
-      longitude: location.lng,
-      address: address || undefined,
-      description,
-      severity,
-      photo: photo || undefined,
-      userEmail: userEmail || undefined,
-      userPhone: userPhone || undefined,
-    });
-    
-    setSubmittedTicketId(ticketId);
-    
-    if (userEmail || userPhone) {
-      toast.success('Report submitted! You will receive notifications about status updates.');
-    } else {
-      toast.success('Report submitted successfully!');
+    setIsSubmitting(true);
+    toast.loading('Submitting report...', { id: 'submit-report' });
+
+    try {
+      const ticketId = await addReport({
+        latitude: location.lat,
+        longitude: location.lng,
+        address: address || undefined,
+        description,
+        severity,
+        photo: photo || undefined,
+        userEmail: userEmail || undefined,
+        userPhone: userPhone || undefined,
+      });
+      
+      setSubmittedTicketId(ticketId);
+      toast.dismiss('submit-report');
+      
+      if (userEmail || userPhone) {
+        toast.success('Report submitted! You will receive notifications about status updates.');
+      } else {
+        toast.success('Report submitted successfully!');
+      }
+    } catch (error) {
+      toast.dismiss('submit-report');
+      toast.error('Failed to submit report. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -542,13 +557,13 @@ const ReportForm = () => {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 z-50 safe-area-bottom">
         <div className="container mx-auto">
           <div className="max-w-md mx-auto flex gap-3">
             {currentStep > 1 && (
               <button
                 onClick={handleBack}
-                className="flex-1 py-3 px-6 rounded-xl border-2 border-border font-medium text-foreground hover:bg-secondary transition-colors"
+                className="flex-1 py-3 px-6 rounded-xl border-2 border-border font-medium text-foreground hover:bg-secondary transition-colors touch-manipulation"
               >
                 Back
               </button>
@@ -557,7 +572,7 @@ const ReportForm = () => {
             {currentStep < 4 ? (
               <button
                 onClick={handleNext}
-                className="flex-1 btn-hero-primary justify-center py-3"
+                className="flex-1 btn-hero-primary justify-center py-3 touch-manipulation"
               >
                 Continue
                 <ArrowRight className="w-5 h-5" />
@@ -565,10 +580,21 @@ const ReportForm = () => {
             ) : (
               <button
                 onClick={handleSubmit}
-                className="flex-1 btn-hero-primary justify-center py-3 bg-success hover:bg-success/90"
+                type="button"
+                disabled={isSubmitting}
+                className="flex-1 btn-hero-primary justify-center py-3 bg-success hover:bg-success/90 touch-manipulation active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send className="w-5 h-5" />
-                Submit Report
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Submit Report
+                  </>
+                )}
               </button>
             )}
           </div>
