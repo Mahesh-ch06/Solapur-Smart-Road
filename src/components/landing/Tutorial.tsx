@@ -49,21 +49,21 @@ const Tutorial = () => {
           <p className="text-sm sm:text-base text-muted-foreground mt-3">Report road issues and track their resolution without the clutter.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
           {steps.map((step) => (
             <div
               key={step.number}
-              className="flex gap-4 rounded-xl border border-border bg-card/70 backdrop-blur-sm p-4 sm:p-5 hover:-translate-y-1 transition-transform"
+              className="flex gap-3 sm:gap-4 rounded-xl border border-border bg-card/70 backdrop-blur-sm p-3.5 sm:p-5 hover:-translate-y-1 transition-transform"
             >
               <div className="flex flex-col items-center gap-2">
-                <div className="w-10 h-10 rounded-full border border-border grid place-items-center text-foreground/80">
-                  <step.icon className="w-5 h-5" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-border grid place-items-center text-foreground/80">
+                  <step.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="text-xs text-muted-foreground">{step.number}</span>
+                <span className="text-[11px] sm:text-xs text-muted-foreground">{step.number}</span>
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg font-semibold text-foreground leading-snug">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                <h3 className="text-base sm:text-lg font-semibold text-foreground leading-snug">{step.title}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{step.description}</p>
               </div>
             </div>
           ))}

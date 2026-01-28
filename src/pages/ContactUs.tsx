@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
+import emailjs from '@emailjs/browser';
 import { 
   Mail, 
   Phone, 
@@ -26,6 +28,19 @@ const ContactUs = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [ticketNumber, setTicketNumber] = useState('');
+
+  const generateTicketNumber = async () => {
+    try {
+      const { data, error } = await supabase.rpc('generate_ticket_number');
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error generating ticket number:', error);
+      // Fallback to client-side generation
+      return `SUP-${Math.floor(100000 + Math.random() * 900000)}`;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,36 +52,58 @@ const ContactUs = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_ACCESS_KEY,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          subject: `Road Rescuer Contact: ${formData.subject}`,
-          message: formData.message,
-          from_name: 'Road Rescuer Website',
-        }),
-      });
+      // Generate ticket number
+      const ticketNum = await generateTicketNumber();
+      setTicketNumber(ticketNum);
 
-      const data = await response.json();
+      // Save to Supabase
+      const { error: dbError } = await supabase
+        .from('support_tickets')
+        .insert([
+          {
+            ticket_number: ticketNum,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone || null,
+            subject: formData.subject,
+            message: formData.message,
+            status: 'new',
+            priority: formData.message.toLowerCase().includes('urgent') ? 'urgent' : 'medium',
+          }
+        ]);
 
-      if (data.success) {
-        setSubmitted(true);
-        toast.success('Message sent successfully!');
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-        
-        // Reset submitted state after 5 seconds
-        setTimeout(() => setSubmitted(false), 5000);
-      } else {
-        throw new Error('Failed to send');
+      if (dbError) throw dbError;
+
+      // Send confirmation email via EmailJS
+      try {
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          'template_otp_verify', // Using the same template ID
+          {
+            to_email: formData.email,
+            to_name: formData.name,
+            otp_code: ticketNum,
+            app_name: 'Solapur Road Rescuer',
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        );
+      } catch (emailError) {
+        console.error('Email error:', emailError);
+        // Continue even if email fails
       }
+
+      setSubmitted(true);
+      toast.success(`Support ticket created! Ticket #${ticketNum}`);
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      
+      // Reset submitted state after 10 seconds
+      setTimeout(() => {
+        setSubmitted(false);
+        setTicketNumber('');
+      }, 10000);
     } catch (error) {
-      toast.error('Failed to send message. Please try again.');
+      console.error('Error:', error);
+      toast.error('Failed to submit. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -221,8 +258,18 @@ const ContactUs = () => {
                   <div className="text-center py-12">
                     <CheckCircle className="w-16 h-16 text-success mx-auto mb-4" />
                     <h3 className="text-2xl font-bold mb-2">Thank You!</h3>
-                    <p className="text-muted-foreground mb-6">
-                      Your message has been sent successfully. We'll get back to you within 24-48 hours.
+                    <p className="text-muted-foreground mb-2">
+                      Your support ticket has been created successfully.
+                    </p>
+                    <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6 inline-block">
+                      <p className="text-sm text-muted-foreground mb-1">Your Ticket Number:</p>
+                      <p className="text-2xl font-bold text-primary font-mono">{ticketNumber}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Save this number for future reference
+                      </p>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      We'll review your query and get back to you within 24-48 hours via email.
                     </p>
                     <Button onClick={() => setSubmitted(false)}>
                       Send Another Message

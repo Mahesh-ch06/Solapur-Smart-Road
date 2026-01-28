@@ -19,6 +19,8 @@ export interface Report {
   address?: string;
   userEmail?: string;
   userPhone?: string;
+  voiceNoteDuration?: number;
+  voiceNoteConfirmed?: boolean;
 }
 
 interface ReportStore {
@@ -55,6 +57,8 @@ const formatReport = (data: any): Report => ({
   address: data.address || undefined,
   userEmail: data.user_email || undefined,
   userPhone: data.user_phone || undefined,
+  voiceNoteDuration: data.voice_note_duration || undefined,
+  voiceNoteConfirmed: data.voice_note_confirmed || undefined,
 });
 
 export const useReportStore = create<ReportStore>((set, get) => ({
@@ -99,6 +103,8 @@ export const useReportStore = create<ReportStore>((set, get) => ({
           address: reportData.address || null,
           user_email: reportData.userEmail || null,
           user_phone: reportData.userPhone || null,
+          voice_note_duration: reportData.voiceNoteDuration || null,
+          voice_note_confirmed: reportData.voiceNoteConfirmed || null,
         })
         .select()
         .single();

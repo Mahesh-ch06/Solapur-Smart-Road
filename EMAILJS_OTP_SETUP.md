@@ -92,35 +92,37 @@ Verify Your Email - {{app_name}}
 <body>
     <div class="container">
         <div class="header">
-            <h1>Email Verification</h1>
+            <h1>Support Ticket Created</h1>
             <p>{{app_name}}</p>
         </div>
         
         <div class="content">
             <h2>Hello {{to_name}},</h2>
             
-            <p>Thank you for using Solapur Road Rescuer! To complete your report submission, please verify your email address with the following One-Time Password (OTP):</p>
+            <p>Thank you for contacting Solapur Road Rescuer! We have successfully received your support query and our team is reviewing it.</p>
             
             <div class="otp-box">
-                <p style="margin: 0; color: #666; font-size: 14px;">Your Verification Code</p>
+                <p style="margin: 0; color: #666; font-size: 14px;">Your Ticket Number</p>
                 <div class="otp-code">{{otp_code}}</div>
-                <p style="margin: 0; color: #666; font-size: 12px;">Valid for 10 minutes</p>
+                <p style="margin: 0; color: #666; font-size: 12px;">Reference this number for follow-ups</p>
             </div>
             
-            <p>Enter this code in the verification form to proceed with reporting a road issue.</p>
+            <p><strong>What happens next?</strong><br>
+            Our support team will review your query and get back to you as soon as possible. Most queries are answered within 24-48 hours.</p>
             
             <div class="warning">
-                <strong>⚠️ Security Notice:</strong><br>
-                • Do not share this code with anyone<br>
-                • This code expires in 10 minutes<br>
-                • If you didn't request this code, please ignore this email
+                <strong>📋 Important Information:</strong><br>
+                • Keep your ticket number for reference<br>
+                • You will receive updates via email<br>
+                • Response time: 24-48 hours (business days)<br>
+                • For urgent issues, please mention "URGENT" in your message
             </div>
             
-            <p>If you have any questions or need assistance, please contact our support team.</p>
+            <p>We appreciate your patience and are committed to helping make Solapur's roads safer for everyone.</p>
             
             <p style="margin-top: 30px;">
-                Best regards,<br>
-                <strong>Solapur Road Rescuer Team</strong>
+                Drive safe,<br>
+                <strong>The Solapur Road Rescuer Team</strong>
             </p>
         </div>
         

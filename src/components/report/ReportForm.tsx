@@ -15,6 +15,7 @@ import {
   Shield
 } from 'lucide-react';
 import DraggableMap from '@/components/map/DraggableMap';
+import { AIVoiceInput } from '@/components/ui/ai-voice-input';
 import { useReportStore, Severity } from '@/store/reportStore';
 import { isNearExistingReport, formatCoords, reverseGeocode } from '@/utils/geolocation';
 import { validateDescription } from '@/utils/profanityFilter';
@@ -67,6 +68,9 @@ const ReportForm = () => {
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [userPhone, setUserPhone] = useState('');
+  const [voiceNoteDuration, setVoiceNoteDuration] = useState<number | null>(null);
+  const [isVoiceRecording, setIsVoiceRecording] = useState(false);
+  const [voiceNoteConfirmed, setVoiceNoteConfirmed] = useState(false);
 
   const handleLocationChange = async (lat: number, lng: number) => {
     setLocation({ lat, lng });
@@ -295,6 +299,8 @@ const ReportForm = () => {
         photo: photo || undefined,
         userEmail: userEmail || undefined,
         userPhone: userPhone || undefined,
+        voiceNoteDuration: voiceNoteConfirmed ? voiceNoteDuration || undefined : undefined,
+        voiceNoteConfirmed: voiceNoteConfirmed || undefined,
       });
       
       setSubmittedTicketId(ticketId);
@@ -433,16 +439,16 @@ const ReportForm = () => {
                 <p>Photo is mandatory</p>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm text-muted-foreground">
-              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+            <div className="flex gap-2 text-xs sm:text-sm text-muted-foreground overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2 whitespace-nowrap">
                 <MapPin className="w-4 h-4 text-primary" />
                 <span>Pin exact spot</span>
               </div>
-              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2 whitespace-nowrap">
                 <Camera className="w-4 h-4 text-primary" />
                 <span>Photo required</span>
               </div>
-              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2">
+              <div className="flex items-center gap-2 bg-secondary/60 border border-border rounded-xl px-3 py-2 whitespace-nowrap">
                 <Shield className="w-4 h-4 text-primary" />
                 <span>OTP-verified email</span>
               </div>
@@ -654,6 +660,75 @@ const ReportForm = () => {
                     <span>Be specific: size, lane, nearby landmark.</span>
                     <span>{description.length}/300</span>
                   </div>
+                </div>
+
+                <div className="rounded-xl border border-dashed border-border bg-secondary/60 p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Voice note (optional)</p>
+                      <p className="text-xs text-muted-foreground">
+                        Prefer speaking in your own language? Tap record and describe the issue. This helps crews hear context, but still type the summary above so it is searchable.
+                      </p>
+                      {voiceNoteDuration !== null && (
+                        <p className="text-xs text-success mt-1">Captured {voiceNoteDuration}s. You can re-record anytime.</p>
+                      )}
+                      {isVoiceRecording && (
+                        <p className="text-xs text-primary mt-1">Recording... tap stop when you are done.</p>
+                      )}
+                    </div>
+                    <span className="text-[11px] px-2 py-1 rounded-full bg-muted text-muted-foreground border border-border">Optional</span>
+                  </div>
+
+                  <AIVoiceInput
+                    onStart={() => setIsVoiceRecording(true)}
+                    onStop={(duration) => {
+                      setIsVoiceRecording(false);
+                      setVoiceNoteDuration(duration);
+                      setVoiceNoteConfirmed(false);
+                      if (duration > 0) {
+                        toast.success(`Voice note marked (${duration}s)`);
+                      }
+                    }}
+                    className="w-full"
+                  />
+
+                  {voiceNoteDuration !== null && (
+                    <div className="rounded-lg border border-border bg-card/70 px-3 py-2 flex flex-col gap-2">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">Voice note ready</p>
+                          <p className="text-xs text-muted-foreground">
+                            Duration: {voiceNoteDuration}s. Confirm to include this note when submitting. Re-record if you want a new take.
+                          </p>
+                        </div>
+                        <span className="text-[11px] text-muted-foreground">Preview (time)</span>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setVoiceNoteConfirmed((prev) => !prev)}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${voiceNoteConfirmed ? 'border-success text-success bg-success/10' : 'border-border text-foreground hover:border-primary/60'}`}
+                        >
+                          {voiceNoteConfirmed ? 'Confirmed for submit' : 'Confirm use'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setVoiceNoteDuration(null);
+                            setVoiceNoteConfirmed(false);
+                          }}
+                          className="px-3 py-1.5 text-xs font-medium rounded-lg border border-border text-muted-foreground hover:border-destructive/60 hover:text-destructive"
+                        >
+                          Re-record
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-muted-foreground">
+                    Optional helper: if you also capture audio in your phone recorder, you can reference it in the notes for field teams.
+                  </p>
                 </div>
                 
                 <div>

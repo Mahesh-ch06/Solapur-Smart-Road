@@ -19,7 +19,9 @@ import {
   Ban,
   CheckSquare,
   Square,
-  Trash2
+  Trash2,
+  Mic,
+  Volume2
 } from 'lucide-react';
 
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
@@ -422,7 +424,14 @@ const AdminWorkOrders = () => {
                     </td>
                     <td className="p-4">
                       <div>
-                        <p className="font-medium text-foreground">{report.ticketId}</p>
+                        <p className="font-medium text-foreground flex items-center gap-2">
+                          {report.ticketId}
+                          {report.voiceNoteConfirmed && (
+                            <span className="inline-flex items-center" title="Voice note submitted">
+                              <Mic className="w-3.5 h-3.5 text-primary" />
+                            </span>
+                          )}
+                        </p>
                         <p className="text-xs text-muted-foreground line-clamp-1 md:hidden">
                           {report.description}
                         </p>
@@ -568,6 +577,47 @@ const AdminWorkOrders = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Description</p>
                 <p className="font-medium">{selectedReport.description}</p>
+              </div>
+
+              {/* Voice Note Section */}
+              <div className="rounded-lg border border-border bg-secondary/30 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    {selectedReport.voiceNoteConfirmed ? (
+                      <Volume2 className="w-5 h-5 text-primary" />
+                    ) : (
+                      <Mic className="w-5 h-5 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">Voice Note</p>
+                    {selectedReport.voiceNoteConfirmed && selectedReport.voiceNoteDuration ? (
+                      <div className="space-y-2 mt-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs px-2 py-1 rounded-full bg-success/10 text-success border border-success/20">
+                            Submitted
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Duration: {selectedReport.voiceNoteDuration}s
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          User provided a voice note in their preferred language. Audio playback feature coming soon.
+                        </p>
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/5 border border-primary/20">
+                          <Volume2 className="w-4 h-4 text-primary" />
+                          <span className="text-xs text-primary font-medium">
+                            Voice recording available ({selectedReport.voiceNoteDuration}s)
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        No voice note submitted
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {selectedReport.photo && (

@@ -19,6 +19,7 @@ const AdminLogin = lazy(() => import("./components/admin/AdminLogin"));
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminMap = lazy(() => import("./pages/AdminMap"));
 const AdminOrders = lazy(() => import("./pages/AdminOrders"));
+const AdminSupport = lazy(() => import("./pages/AdminSupport"));
 const AdminAuditLogs = lazy(() => import("./pages/AdminAuditLogs"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/admin" element={<Suspense fallback={<PageLoader />}><ProtectedRoute><Admin /></ProtectedRoute></Suspense>} />
           <Route path="/admin/map" element={<Suspense fallback={<PageLoader />}><ProtectedRoute><AdminMap /></ProtectedRoute></Suspense>} />
           <Route path="/admin/orders" element={<Suspense fallback={<PageLoader />}><ProtectedRoute><AdminOrders /></ProtectedRoute></Suspense>} />
+          <Route path="/admin/support" element={<Suspense fallback={<PageLoader />}><ProtectedRoute><AdminSupport /></ProtectedRoute></Suspense>} />
           <Route path="/admin/audit-logs" element={<Suspense fallback={<PageLoader />}><ProtectedRoute><AdminAuditLogs /></ProtectedRoute></Suspense>} />
           <Route path="/admin/reset-password" element={<Suspense fallback={<PageLoader />}><ProtectedRoute><ResetPassword /></ProtectedRoute></Suspense>} />
           

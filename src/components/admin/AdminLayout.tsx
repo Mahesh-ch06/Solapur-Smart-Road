@@ -12,7 +12,8 @@ import {
   LogOut,
   User,
   KeyRound,
-  Shield
+  Shield,
+  MessageSquare
 } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -20,6 +21,7 @@ const navItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/admin/map', icon: Map, label: 'Live Map' },
   { path: '/admin/orders', icon: ClipboardList, label: 'Work Orders' },
+  { path: '/admin/support', icon: MessageSquare, label: 'Support Tickets' },
   { path: '/admin/audit-logs', icon: Shield, label: 'Audit Logs' },
 ];
 

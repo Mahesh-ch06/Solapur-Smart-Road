@@ -195,45 +195,66 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">Comprehensive analytics & operations overview</p>
+      {/* Hero */}
+      <div className="rounded-2xl border border-border bg-gradient-to-r from-primary/10 via-primary/5 to-background p-5 sm:p-6 shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Operations</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Admin Command Center</h1>
+            <p className="text-sm text-muted-foreground">Monitor reports, unblock crews, and keep SLAs on track.</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {['today','week','month','all'].map((range) => (
+              <button
+                key={range}
+                onClick={() => setDateRange(range as any)}
+                className={`px-3 py-2 rounded-lg text-sm border transition-colors ${dateRange === range ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-card hover:bg-secondary'}`}
+              >
+                {range === 'today' ? 'Today' : range === 'week' ? 'Last 7 days' : range === 'month' ? 'Last 30 days' : 'All time'}
+              </button>
+            ))}
+            <button
+              onClick={exportToCSV}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card hover:bg-secondary text-sm"
+            >
+              <Download className="w-4 h-4" />
+              Export CSV
+            </button>
+            <Link
+              to="/admin/map"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm"
+            >
+              <Map className="w-4 h-4" />
+              Live Map
+            </Link>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value as any)}
-            className="px-4 py-2 bg-card border border-border rounded-lg text-sm"
-          >
-            <option value="today">Today</option>
-            <option value="week">Last 7 Days</option>
-            <option value="month">Last 30 Days</option>
-            <option value="all">All Time</option>
-          </select>
-          <button
-            onClick={exportToCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-secondary text-foreground rounded-lg hover:bg-secondary/80 transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Export CSV
-          </button>
-          <Link
-            to="/admin/map"
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            <Map className="w-4 h-4" />
-            View Map
-          </Link>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+          <div className="rounded-xl border border-white/10 bg-white/50 dark:bg-white/5 p-3">
+            <p className="text-xs text-muted-foreground">Open</p>
+            <p className="text-xl font-semibold text-foreground">{filteredReports.filter(r => r.status === 'open').length}</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/50 dark:bg-white/5 p-3">
+            <p className="text-xs text-muted-foreground">In Progress</p>
+            <p className="text-xl font-semibold text-foreground">{advancedStats.activeCount}</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/50 dark:bg-white/5 p-3">
+            <p className="text-xs text-muted-foreground">Resolved</p>
+            <p className="text-xl font-semibold text-foreground">{filteredReports.filter(r => r.status === 'resolved').length}</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/50 dark:bg-white/5 p-3">
+            <p className="text-xs text-muted-foreground">Avg Resolution</p>
+            <p className="text-xl font-semibold text-foreground">{advancedStats.avgResolutionHours}h</p>
+          </div>
         </div>
       </div>
 
       {/* Stats Grid - 4 columns on large screens */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {statCards.map((stat, index) => (
           <div
             key={stat.label}
-            className="card-elevated animate-fade-in hover:shadow-lg transition-shadow"
+            className="card-elevated animate-fade-in hover:shadow-lg transition-shadow min-h-[140px]"
             style={{ animationDelay: `${index * 0.05}s` }}
           >
             <div className="flex items-start justify-between">
@@ -348,6 +369,9 @@ const AdminDashboard = () => {
                       <p className="text-xs text-muted-foreground truncate">
                         {report.description}
                       </p>
+                      {report.address && (
+                        <p className="text-[11px] text-muted-foreground/80 truncate mt-1">{report.address}</p>
+                      )}
                     </div>
                     <span
                       className={`px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${
@@ -358,6 +382,10 @@ const AdminDashboard = () => {
                     >
                       {report.status === 'in-progress' ? 'In Progress' : 'Open'}
                     </span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+                    <Calendar className="w-3 h-3" />
+                    <span>{new Date(report.createdAt).toLocaleDateString()}</span>
                   </div>
                 </Link>
               ))
@@ -392,6 +420,9 @@ const AdminDashboard = () => {
                       <p className="text-xs text-muted-foreground truncate">
                         {report.description}
                       </p>
+                      {report.address && (
+                        <p className="text-[11px] text-muted-foreground/80 truncate mt-1">{report.address}</p>
+                      )}
                     </div>
                     <span
                       className={`px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${
@@ -406,6 +437,10 @@ const AdminDashboard = () => {
                     >
                       {report.status.replace('-', ' ')}
                     </span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+                    <Calendar className="w-3 h-3" />
+                    <span>{new Date(report.createdAt).toLocaleDateString()}</span>
                   </div>
                 </Link>
               ))
