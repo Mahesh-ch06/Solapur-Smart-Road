@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 import emailjs from '@emailjs/browser';
 import { 
   MessageCircle, 
@@ -181,42 +182,74 @@ export const AIChatbot = () => {
 
   const createSupportTicket = async (userEmail: string, ticketId?: string, summary?: string) => {
     try {
-      const supportTicketId = `SUP-${Date.now().toString().slice(-6)}`;
+      // Generate ticket number using Supabase function or fallback
+      let supportTicketId: string;
+      try {
+        const { data, error } = await supabase.rpc('generate_ticket_number');
+        if (error) throw error;
+        supportTicketId = data;
+      } catch (error) {
+        console.error('Error generating ticket number:', error);
+        supportTicketId = `SUP-${Math.floor(100000 + Math.random() * 900000)}`;
+      }
+
       const issueDescription = summary
         ? summary
         : ticketId 
         ? `User cannot find report with Ticket ID: ${ticketId}. Email: ${userEmail}`
         : `User needs assistance with report search. Email: ${userEmail}`;
 
-      // Submit support ticket via Web3Forms
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_ACCESS_KEY,
-          name: userEmail,
-          email: userEmail,
-          subject: `Support Ticket ${supportTicketId} - Report Not Found`,
-          message: issueDescription,
-          from_name: 'Road Rescuer Support Bot',
-        }),
-      });
+      const issueSubject = ticketId 
+        ? `Report Not Found: ${ticketId}`
+        : summary 
+        ? 'Support Request via Chatbot'
+        : 'Assistance Needed';
+
+      // Save to Supabase support_tickets table
+      const { error: dbError } = await supabase
+        .from('support_tickets')
+        .insert([
+          {
+            ticket_number: supportTicketId,
+            name: userEmail.split('@')[0],
+            email: userEmail,
+            phone: null,
+            subject: issueSubject,
+            message: issueDescription,
+            status: 'new',
+            priority: ticketId ? 'high' : 'medium',
+          }
+        ]);
+
+      if (dbError) {
+        console.error('Error saving to support_tickets:', dbError);
+        throw dbError;
+      }
+
+      console.log('Support ticket created in database:', supportTicketId);
 
       // Send confirmation email to user via EmailJS
       const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
       const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
       
       if (EMAILJS_SERVICE_ID && EMAILJS_PUBLIC_KEY) {
-        await emailjs.send(
-          EMAILJS_SERVICE_ID,
-          'template_otp_verify',
-          {
-            to_email: userEmail,
-            to_name: userEmail.split('@')[0],
-            otp_code: supportTicketId,
-            app_name: 'Road Rescuer - Support Ticket Created',
-          }
-        );
+        try {
+          await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            'template_otp_verify',
+            {
+              to_email: userEmail,
+              to_name: userEmail.split('@')[0],
+              otp_code: supportTicketId,
+              app_name: 'Solapur Road Rescuer',
+            },
+            EMAILJS_PUBLIC_KEY
+          );
+          console.log('Confirmation email sent to:', userEmail);
+        } catch (emailError) {
+          console.error('Email sending failed:', emailError);
+          // Continue even if email fails
+        }
       }
 
       return supportTicketId;

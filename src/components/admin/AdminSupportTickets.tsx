@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { 
   Mail, 
@@ -14,12 +14,15 @@ import {
   User,
   Inbox,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Headphones,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import {
   Select,
@@ -28,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from '@/components/ui/input';
 
 interface SupportTicket {
   id: string;
@@ -47,16 +49,28 @@ interface SupportTicket {
   updated_at: string;
 }
 
+interface ChatMessage {
+  id: string;
+  ticket_id: string;
+  ticket_number: string;
+  sender_type: 'user' | 'admin';
+  sender_name: string;
+  message: string;
+  created_at: string;
+}
+
 const AdminSupportTickets = () => {
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [filteredTickets, setFilteredTickets] = useState<SupportTicket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
-  const [reply, setReply] = useState('');
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchTickets();
@@ -66,21 +80,43 @@ const AdminSupportTickets = () => {
     filterTickets();
   }, [tickets, statusFilter, searchQuery]);
 
+  useEffect(() => {
+    if (selectedTicket) {
+      loadChatMessages(selectedTicket.id, selectedTicket.ticket_number);
+      subscribeToChat(selectedTicket.ticket_number);
+    }
+  }, [selectedTicket]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
   const fetchTickets = async () => {
     try {
       setLoading(true);
+      console.log('Fetching support tickets from Supabase...');
+      
       const { data, error } = await supabase
         .from('support_tickets')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('Supabase response:', { data, error });
+
+      if (error) {
+        console.error('Supabase error details:', error);
+        throw error;
+      }
+      
+      console.log('Successfully fetched tickets:', data?.length || 0, 'tickets');
       setTickets(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching tickets:', error);
+      console.error('Error message:', error.message);
+      console.error('Error details:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load support tickets',
+        description: `Failed to load support tickets: ${error.message || 'Unknown error'}`,
         variant: 'destructive',
       });
     } finally {
@@ -90,10 +126,14 @@ const AdminSupportTickets = () => {
 
   const filterTickets = () => {
     let filtered = tickets;
+    console.log('Filtering tickets. Total tickets:', tickets.length);
+    console.log('Status filter:', statusFilter);
+    console.log('Search query:', searchQuery);
 
     // Filter by status
     if (statusFilter !== 'all') {
       filtered = filtered.filter(ticket => ticket.status === statusFilter);
+      console.log('After status filter:', filtered.length);
     }
 
     // Filter by search query
@@ -106,13 +146,95 @@ const AdminSupportTickets = () => {
         ticket.subject.toLowerCase().includes(query) ||
         ticket.message.toLowerCase().includes(query)
       );
+      console.log('After search filter:', filtered.length);
     }
 
+    console.log('Final filtered tickets:', filtered.length);
     setFilteredTickets(filtered);
   };
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const loadChatMessages = async (ticketId: string, ticketNumber: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('ticket_number', ticketNumber)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setChatMessages(data || []);
+    } catch (error) {
+      console.error('Error loading chat messages:', error);
+    }
+  };
+
+  const subscribeToChat = (ticketNumber: string) => {
+    const channel = supabase
+      .channel(`admin-chat:${ticketNumber}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `ticket_number=eq.${ticketNumber}`,
+        },
+        (payload) => {
+          setChatMessages((current) => [...current, payload.new as ChatMessage]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
+
+  const handleSendMessage = async () => {
+    if (!selectedTicket || !newMessage.trim()) return;
+
+    try {
+      setSubmitting(true);
+      const { error } = await supabase.from('chat_messages').insert([
+        {
+          ticket_id: selectedTicket.id,
+          ticket_number: selectedTicket.ticket_number,
+          sender_type: 'admin',
+          sender_name: 'Support Team',
+          message: newMessage.trim(),
+        },
+      ]);
+
+      if (error) throw error;
+
+      // Update ticket status to in-progress if it's new
+      if (selectedTicket.status === 'new') {
+        await updateTicketStatus(selectedTicket.id, 'in-progress');
+      }
+
+      setNewMessage('');
+      toast({
+        title: 'Message sent',
+        description: 'Your message has been sent to the user',
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to send message',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleReply = async () => {
-    if (!selectedTicket || !reply.trim()) {
+    if (!selectedTicket || !newMessage.trim()) {
       toast({
         title: 'Error',
         description: 'Please enter a reply message',
@@ -127,7 +249,7 @@ const AdminSupportTickets = () => {
       const { error } = await supabase
         .from('support_tickets')
         .update({
-          admin_reply: reply,
+          admin_reply: newMessage,
           status: 'resolved',
           replied_at: new Date().toISOString(),
         })
@@ -140,7 +262,7 @@ const AdminSupportTickets = () => {
         description: 'Reply sent successfully',
       });
 
-      setReply('');
+      setNewMessage('');
       setSelectedTicket(null);
       fetchTickets();
     } catch (error) {
@@ -363,12 +485,13 @@ const AdminSupportTickets = () => {
                 size="sm"
                 onClick={() => {
                   setSelectedTicket(ticket);
-                  setReply(ticket.admin_reply || '');
+                  setNewMessage('');
+                  setChatMessages([]);
                 }}
                 className="flex-1"
               >
-                <MessageSquare className="h-4 w-4 mr-2" />
-                {ticket.admin_reply ? 'Update Reply' : 'Reply'}
+                <Headphones className="h-4 w-4 mr-2" />
+                Open Live Chat
               </Button>
               {ticket.status !== 'resolved' && (
                 <Button
@@ -407,65 +530,136 @@ const AdminSupportTickets = () => {
         </Card>
       )}
 
-      {/* Reply Modal */}
+      {/* Live Chat Modal */}
       {selectedTicket && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between">
+          <Card className="w-full max-w-4xl h-[600px] flex flex-col">
+            {/* Header */}
+            <div className="flex items-start justify-between p-6 border-b">
               <div>
-                <h2 className="text-2xl font-bold mb-1">Reply to Ticket</h2>
+                <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
+                  <Headphones className="h-6 w-6" />
+                  Live Support Chat
+                </h2>
                 <p className="text-sm text-muted-foreground">
                   {selectedTicket.ticket_number} - {selectedTicket.subject}
                 </p>
+                <div className="flex gap-2 mt-2">
+                  <Badge className={getStatusColor(selectedTicket.status)}>
+                    {selectedTicket.status}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    {selectedTicket.email}
+                  </span>
+                </div>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
                   setSelectedTicket(null);
-                  setReply('');
+                  setChatMessages([]);
+                  setNewMessage('');
                 }}
               >
-                ✕
+                <X className="h-5 w-5" />
               </Button>
             </div>
 
-            <div className="space-y-2">
-              <div className="bg-muted p-4 rounded-md">
-                <p className="text-sm font-semibold mb-2">User Message:</p>
-                <p className="text-sm">{selectedTicket.message}</p>
+            {/* Chat Messages Area */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-muted/30">
+              {/* Initial Ticket Message */}
+              <div className="flex justify-start">
+                <div className="max-w-[75%] bg-white dark:bg-gray-800 border rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <User className="w-4 h-4" />
+                    <span className="text-xs font-semibold">
+                      {selectedTicket.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      (Initial Request)
+                    </span>
+                  </div>
+                  <p className="text-sm whitespace-pre-wrap">
+                    {selectedTicket.message}
+                  </p>
+                  <span className="text-xs text-muted-foreground mt-2 block">
+                    {new Date(selectedTicket.created_at).toLocaleString()}
+                  </span>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Your Reply:</label>
+              {/* Chat Messages */}
+              {chatMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex ${
+                    msg.sender_type === 'admin' ? 'justify-end' : 'justify-start'
+                  }`}
+                >
+                  <div
+                    className={`max-w-[75%] rounded-lg p-4 ${
+                      msg.sender_type === 'admin'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-white dark:bg-gray-800 border'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {msg.sender_type === 'admin' ? (
+                        <Headphones className="w-4 h-4" />
+                      ) : (
+                        <User className="w-4 h-4" />
+                      )}
+                      <span className="text-xs font-semibold">
+                        {msg.sender_name}
+                      </span>
+                    </div>
+                    <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                    <span className="text-xs opacity-70 mt-2 block">
+                      {new Date(msg.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="p-4 border-t">
+              <div className="flex gap-2">
                 <Textarea
-                  value={reply}
-                  onChange={(e) => setReply(e.target.value)}
-                  placeholder="Type your reply here..."
-                  rows={6}
-                  className="resize-none"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type your message..."
+                  rows={2}
+                  className="flex-1 resize-none"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
                 />
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={submitting || !newMessage.trim()}
+                    size="icon"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                  {selectedTicket.status !== 'resolved' && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateTicketStatus(selectedTicket.id, 'resolved')}
+                      title="Mark as Resolved"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-
-            <div className="flex gap-2">
-              <Button
-                onClick={handleReply}
-                disabled={submitting || !reply.trim()}
-                className="flex-1"
-              >
-                <Send className="h-4 w-4 mr-2" />
-                {submitting ? 'Sending...' : 'Send Reply & Mark Resolved'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSelectedTicket(null);
-                  setReply('');
-                }}
-              >
-                Cancel
-              </Button>
             </div>
           </Card>
         </div>

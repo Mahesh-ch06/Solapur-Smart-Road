@@ -5,6 +5,7 @@ import Tutorial from '@/components/landing/Tutorial';
 import Footer from '@/components/landing/Footer';
 import ThemeToggle from '@/components/ThemeToggle';
 import { AIChatbot } from '@/components/landing/AIChatbot';
+import { LiveChatWidget } from '@/components/landing/LiveChatWidget';
 
 const Index = () => {
   return (
@@ -22,6 +23,9 @@ const Index = () => {
       
       {/* AI Chatbot */}
       <AIChatbot />
+      
+      {/* Live Support Chat Widget */}
+      <LiveChatWidget />
     </div>
   );
 };

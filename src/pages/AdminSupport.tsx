@@ -1,7 +1,12 @@
+import AdminLayout from '@/components/admin/AdminLayout';
 import AdminSupportTickets from '@/components/admin/AdminSupportTickets';
 
 const AdminSupport = () => {
-  return <AdminSupportTickets />;
+  return (
+    <AdminLayout>
+      <AdminSupportTickets />
+    </AdminLayout>
+  );
 };
 
 export default AdminSupport;
